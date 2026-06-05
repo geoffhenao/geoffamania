@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Geoff's Who!</title>
+<style>
+body{
+margin:0;
+background:#222;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+.grid-wrap{
+background:#000;
+padding:24px;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(3,200px);
+grid-template-rows:repeat(3,200px);
+gap:24px;
+}
+.panel{
+position:relative;
+width:200px;
+height:200px;
+background:#eee;
+border:4px solid #fff;
+overflow:hidden;
+box-sizing:border-box;
+cursor:pointer;
+}
+.panel img{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+object-fit:cover;
+display:none;
+z-index:1;
+}
+.overlay-text{
+position:absolute;
+left:0;
+right:0;
+bottom:0;
+height:48px;
+z-index:2;
+background:rgba(0,0,0,.55);
+border:none;
+outline:none;
+resize:none;
+padding:10px;
+box-sizing:border-box;
+font-size:18px;
+font-family:Arial,sans-serif;
+color:white;
+text-align:center;
+line-height:1.2;
+}
+.label{
+position:absolute;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+font-family:Arial,sans-serif;
+color:#666;
+pointer-events:none;
+}
+</style>
+</head>
+<body>
+<div class="grid-wrap">
+<div class="grid" id="grid"></div>
+</div>
+
+<script>
+const grid=document.getElementById("grid");
+
+for(let i=0;i<9;i++){
+const panel=document.createElement("div");
+panel.className="panel";
+
+const label=document.createElement("div");
+label.className="label";
+label.innerText="Add Image";
+
+const img=document.createElement("img");
+
+const text=document.createElement("textarea");
+text.className="overlay-text";
+text.placeholder="Type here...";
+
+const input=document.createElement("input");
+input.type="file";
+input.accept="image/*";
+input.hidden=true;
+
+function load(file){
+if(!file)return;
+const reader=new FileReader();
+reader.onload=e=>{
+img.src=e.target.result;
+img.style.display="block";
+label.style.display="none";
+}
+reader.readAsDataURL(file);
+}
+
+panel.addEventListener("dragover",e=>e.preventDefault());
+panel.addEventListener("drop",e=>{
+e.preventDefault();
+load(e.dataTransfer.files[0]);
+});
+
+panel.addEventListener("click",e=>{
+if(e.target===panel || e.target===label || e.target===img){
+input.click();
+}
+});
+
+input.addEventListener("change",e=>load(e.target.files[0]));
+
+panel.append(label,img,text,input);
+grid.append(panel);
+}
+</script>
+
+</body>
+</html>
