@@ -261,7 +261,7 @@
         .category-header {
             background-color: var(--blue-jeopardy);
             border: 3px solid white;
-            padding: 0;
+            padding: 5px;
             min-height: 80px;
             height: 80px;
             display: flex;
@@ -269,6 +269,24 @@
             justify-content: center;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
             overflow: hidden;
+        }
+
+        .category-editable {
+            width: 100%;
+            color: white;
+            font-family: monospace;
+            font-size: 1.1rem; /* Increased size */
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: bold;
+            line-height: 1.2;
+            word-wrap: break-word;
+            outline: none;
+            cursor: text;
+        }
+
+        .category-editable:focus {
+            outline: 1px #336699;
         }
 
         .category-textarea {
@@ -535,13 +553,16 @@
                 const header = document.createElement('div');
                 header.className = 'category-header';
                 
-                const textarea = document.createElement('textarea');
-                textarea.className = 'category-textarea';
-                textarea.value = cat;
+                // Changed from textarea to a div
+                const editableDiv = document.createElement('div');
+                editableDiv.className = 'category-editable';
+                editableDiv.contentEditable = "true";
+                editableDiv.innerText = cat;
                 
-                header.appendChild(textarea);
+                header.appendChild(editableDiv);
                 board.appendChild(header);
             });
+            // ... rest of the function remains same
 
             difficulties.forEach(diff => {
                 gameData.categories.forEach((cat, index) => {
@@ -556,7 +577,11 @@
 
                     cell.addEventListener('click', () => {
                         if (cell.classList.contains('disabled')) return;
-                        const currentCatName = document.querySelectorAll('.category-textarea')[index].value.trim();
+                        
+                        // FIX: Look for .category-editable, not .category-textarea
+                        const categoryElements = document.querySelectorAll('.category-editable');
+                        const currentCatName = categoryElements[index].innerText.trim();
+                        
                         launchQuestion(currentCatName, diff, cell);
                     });
 
@@ -589,9 +614,17 @@
         }
 
         // 3. INTERACTION LOGIC
-        function launchQuestion(category, difficulty, cellElement) {
-            const lookupKey = gameData.questions[category] ? category : Object.keys(gameData.questions)[Array.from(document.querySelectorAll('.category-textarea')).findIndex(el => el.value.trim() === category)];
-            const question = gameData.questions[lookupKey] ? gameData.questions[lookupKey][difficulty] : "No question loaded for this custom category.";
+        function launchQuestion(categoryName, difficulty, cellElement) {
+            // Find the index of the column that was clicked
+            const categoryElements = Array.from(document.querySelectorAll('.category-editable'));
+            const index = categoryElements.findIndex(el => el.innerText.trim() === categoryName);
+            
+            // Map index to the original data category name
+            const originalCategoryKey = gameData.categories[index];
+            
+            const question = gameData.questions[originalCategoryKey] ? 
+                             gameData.questions[originalCategoryKey][difficulty] : 
+                             "No question loaded.";
             
             document.getElementById('modal-text').innerText = question;
             document.getElementById('modal').style.display = 'flex';
@@ -654,31 +687,59 @@
         // Run on load
         initBoard();
 
-        // 5. TIMER LOGIC
-        let countdown; 
+// 5. TIMER LOGIC
+let countdown; 
 
-        function startTimer() {
-            clearInterval(countdown); 
-            let seconds = parseInt(document.getElementById("timerInput").value);
-            
-            if (isNaN(seconds) || seconds < 1) seconds = 30;
-            
-            const display = document.getElementById("timerDisplay");
-            display.innerText = seconds;
-            
-            countdown = setInterval(() => {
-                seconds--;
-                display.innerText = seconds;
-                
-                if (seconds <= 0) {
-                    clearInterval(countdown);
-                    display.innerText = "0";
-                }
-            }, 1000);
+function startTimer() {
+    clearInterval(countdown); 
+    
+    // Reset audio immediately
+    const countdownSound = document.getElementById("alarm-sound-countdown");
+    const endSound = document.getElementById("alarm-sound-end");
+    countdownSound.pause();
+    countdownSound.currentTime = 0;
+    endSound.pause();
+    endSound.currentTime = 0;
+    
+    let seconds = parseInt(document.getElementById("timerInput").value);
+    if (isNaN(seconds) || seconds < 1) seconds = 30;
+    
+    const display = document.getElementById("timerDisplay");
+    display.innerText = seconds;
+    
+    countdown = setInterval(() => {
+        seconds--;
+        display.innerText = seconds;
+        
+        // --- UPDATED LOGIC ---
+        // Play the sound ONLY when exactly 7 seconds are left
+        if (seconds === 12) {
+            countdownSound.currentTime = 0;
+            countdownSound.play();
         }
+        
+        // --- Timer Reaches Zero ---
+        if (seconds <= 0) {
+            clearInterval(countdown);
+            display.innerText = "0";
+            endSound.play();
+        }
+    }, 1000);
+}
 
         function stopTimer() {
+            // Stop the countdown
             clearInterval(countdown);
+            
+            // Stop and reset the countdown audio
+            const countdownSound = document.getElementById("alarm-sound-countdown");
+            countdownSound.pause();
+            countdownSound.currentTime = 0;
+            
+            // Stop and reset the end sound
+            const endSound = document.getElementById("alarm-sound-end");
+            endSound.pause();
+            endSound.currentTime = 0;
         }
 
         // 6. MODIFIER TOGGLE LOGIC
@@ -690,5 +751,7 @@
             panelElement.classList.toggle('curse-active');
         }
     </script>
+    <audio id="alarm-sound-countdown" src="https://geoffhenao.github.io/geoffamania/drowning-panic-theme.mp3"></audio>
+    <audio id="alarm-sound-end" src="https://geoffhenao.github.io/geoffamania/ring-loss.mp3"></audio>
 </body>
 </html>
