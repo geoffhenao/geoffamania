@@ -18,8 +18,8 @@ padding:24px;
 }
 .grid{
 display:grid;
-grid-template-columns:repeat(3,200px);
-grid-template-rows:repeat(3,200px);
+grid-template-columns:repeat(3,500px);
+grid-template-rows:repeat(3,500px);
 gap:24px;
 }
 .panel{
@@ -126,6 +126,11 @@ input.addEventListener("change",e=>load(e.target.files[0]));
 
 panel.append(label,img,text,input);
 grid.append(panel);
+  // Right-click a text area to clear it instantly on stream
+text.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    text.value = "";
+});
 }
 </script>
 
