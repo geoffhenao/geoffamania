@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <title>Tic Tac Oh No!</title>
 
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8YCZ6PXJ3B"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7VTBFP1ZC2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-8YCZ6PXJ3B');
+  gtag('config', 'G-7VTBFP1ZC2');
 </script>
 
 <style>
@@ -487,33 +487,26 @@ mediaSlot2.addEventListener("contextmenu", e => {
     mediaLabel2.style.display = "block";
     mediaInput2.value = "";
 });
-let countdown;
-
-function startTimer() {
-    clearInterval(countdown); // Stop any existing timer
-    let seconds = parseInt(document.getElementById("timerInput").value);
-    
-    // Safety check
-    if (isNaN(seconds) || seconds < 1) seconds = 30;
-    
-    const display = document.getElementById("timerDisplay");
-    display.innerText = seconds;
-    
-    countdown = setInterval(() => {
-        seconds--;
-        display.innerText = seconds;
-        
-        if (seconds <= 0) {
+        let countdown;
+        function startTimer() {
             clearInterval(countdown);
-            display.innerText = "0";
+            let s = parseInt(document.getElementById("timerInput").value) || 30;
+            const display = document.getElementById("timerDisplay");
+            countdown = setInterval(() => {
+                s--;
+                display.innerText = s;
+                if(s === 12) document.getElementById("alarm-sound-countdown").play();
+                if(s <= 0) { clearInterval(countdown); document.getElementById("alarm-sound-end").play(); }
+            }, 1000);
         }
-    }, 1000);
-}
 
-function stopTimer() {
-    clearInterval(countdown);
-}
+        function stopTimer() {
+            clearInterval(countdown);
+            document.getElementById("alarm-sound-countdown").pause();
+            document.getElementById("alarm-sound-end").pause();
+        }
 </script>
-
+    <audio id="alarm-sound-countdown" src="https://geoffhenao.github.io/geoffamania/drowning-panic-theme.mp3"></audio>
+    <audio id="alarm-sound-end" src="https://geoffhenao.github.io/geoffamania/ring-loss.mp3"></audio>
 </body>
 </html>
