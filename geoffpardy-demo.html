@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geo(ff)pardy!</title>
@@ -61,10 +62,10 @@
             font-weight: bold;
         }
 
-        .main-title-input:focus {
-            outline: 2px dashed #336699;
+     /*   .main-title-input:focus {
+             outline: 2px dashed #336699; 
             background: rgba(255,255,255,0.05);
-        }
+        } */
 
         /* Game Layout */
         .game-container {
@@ -236,7 +237,7 @@
         }
 
         .modifier-title-input:focus {
-            outline: 1px dashed #336699;
+            /* outline: 1px dashed #336699; */
             background: rgba(255,255,255,0.05);
         }
 
@@ -432,8 +433,10 @@
 <div id="header-container" style="text-align: center;">
     <img src="https://geoffhenao.github.io/geoffamania/geoffamania-logo-x.GIF" alt="Geoffamania" style="max-width: 600px; margin-bottom: 10px;">
 </div>
-    <input type="text" class="main-title-input" value="GEO(FF)PARDY!">
-
+    <div class="main-title-input">GEO(FF)PARDY!</div>
+    <button class="close-btn" onclick="openRules()">View Rules</button>
+</div>
+<br>
     <div class="game-container">
         
         <div style="display: flex; flex-direction: column;">
@@ -451,17 +454,18 @@
             </div>
 
             <div class="modifier-panel" id="bonus-panel-p1" onclick="toggleBonusGlow(this)">
-                <input type="text" class="modifier-title-input" value="BINTERMAN BONUS" onclick="event.stopPropagation();">
+<div class="modifier-title-input">BINTERMAN BONUS</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P1 Bonus">
             </div>
 
             <div class="modifier-panel" id="curse-panel-p1" onclick="toggleCurseGlow(this)">
-                <input type="text" class="modifier-title-input" value="NGIAM CURSE" onclick="event.stopPropagation();">
+  <div class="modifier-title-input">NGIAM CURSE</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/geoff-by-profbanzi-ryo.PNG" alt="P1 Curse">
             </div>
         </div>
 
         <div class="center-column">
+            
             <div class="board" id="game-board"></div>
 
             <div class="info-box">
@@ -472,8 +476,10 @@
                     <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; width: 80px;">Start</button>
                     <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; width: 80px;">Stop</button>
                 </div>
+                
             </div>
         </div>
+        
             
         <div style="display: flex; flex-direction: column;">
             <div class="player-panel">
@@ -490,12 +496,12 @@
             </div>
 
             <div class="modifier-panel" id="bonus-panel-p2" onclick="toggleBonusGlow(this)">
-                <input type="text" class="modifier-title-input" value="BINTERMAN BONUS" onclick="event.stopPropagation();">
+ <div class="modifier-title-input">BINTERMAN BONUS</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P2 Bonus">
             </div>
 
             <div class="modifier-panel" id="curse-panel-p2" onclick="toggleCurseGlow(this)">
-                <input type="text" class="modifier-title-input" value="NGIAM CURSE" onclick="event.stopPropagation();">
+<div class="modifier-title-input">NGIAM CURSE</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/geoff-by-profbanzi-ryo.PNG" alt="P2 Curse">
             </div>
         </div>
@@ -505,131 +511,134 @@
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <div class="modal-question" id="modal-text">Loading question...</div>
-            <button class="close-btn" onclick="closeModal()">Close Window</button>
+            <button class="close-btn" onclick="closeModal()">Close Window</button><br>
         </div>
     </div>
-
+<div class="modal-overlay" id="rules-modal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeRules()">Close Rules</button>
+        <div id="rules-text" style="margin-top: 30px; text-align: left; line-height: 1.6; font-size: 1.2rem;">
+            <h3 style="text-align: center;">How to Play Geo(ff)pardy:</h3>
+            <p style="font-size: 15px;">Players start with 750 points and must wager points to answer a question. If they get it right, they will be rewarded with the points they wagered. If they get it wrong, they lose the wagered points. There are four categories, with three difficulties per category. There will be both minimum and maximum wagers for each difficulty:
+<p></p>
+Easy (100/300) Medium (200/400) Hard (300/500)
+<p></p>
+<p></p><p style="font-size: 15px;">If a player has fewer points than the minimum, they have to wager their entire total amount. The game will go on until all questions are cleared OR a player eliminates themselves.
+            <p><p style="font-size: 15px;">1 Skip Per Player - Each player is allowed one skip; however, while you keep your bet when you skip, it opens the question up for the other player to answer. If they get it right, they will get half the minimum points for that question. Example: The player skips a Hard (300) question; if their opponent answers it correctly, they will get 150.</p>
+            <p><p style="font-size: 15px;">1 NGIAM - The mask beckons, and I can’t resist the dark side. NGIAM returns to ruin someone’s fucking night. The player loses their turn (but keeps their points); however, they only get half the points they wager on their next turn. Example: Player bets 300 on a Medium question, they’ll only get 150 if correct; if they get it wrong, they lose the full 300.</p>
+            <p><p style="font-size: 15px;">1 Binterman Bonus - The player can either take the points OR forego the points and gain the Binterman Bonus upon a right answer. For one future wrong answer, they can choose to use the Binterman Bonus and halve the amount of points lost. This must be declared at the start of your move. Example: The player uses a Binterman Bonus, wagered 500, and got the question wrong - they’ll instead only lose 250. A Binterman Bonus can not be used while NGIAM is around.</p>
+        </div>
+    </div>
+</div>
     <script>
-        // 1. DATA MAPPING
-        const gameData = {
-            categories: ["Category 1", "Category 2", "Category 3", "Category 4"],
-            questions: {
-                "Category 1": {
-                    "Easy": "This 'Cleaner' won the inaugural IWGP United States Championship.",
-                    "Medium": "He was known as 'La Sombra' in CMLL before signing with WWE.",
-                    "Hard": "Name the stable founded by Rush in CMLL that later expanded to Japan as Los Ingobernables de Japón."
-                },
-                "Category 2": {
-                    "Easy": "This Nintendo hybrid console lets you play on the TV or on the go.",
-                    "Medium": "In God of War (2018), this is the true giant name of Atreus' mother, Laufey.",
-                    "Hard": "This Ubisoft platforming mascot debuted in 1995 without any limbs."
-                },
-                "Category 3": {
-                    "Easy": "This Chicago establishment is famous for its Swedish pancakes and lingonberries.",
-                    "Medium": "This Korean fried chicken chain is famous for its signature Soy Garlic and Spicy glazes.",
-                    "Hard": "This historic cash-only counter in Chicago is legendary for its Korean-American breakfasts like kimchi bacon fried rice."
-                },
-                "Category 4": {
-                    "Easy": "What is the starting bank total for a standard game of Ge(off)pardy?",
-                    "Medium": "True or False: A Binterman Bonus can be applied to a Whammy penalty.",
-                    "Hard": "When must a player declare they are using a Binterman Bonus?"
-                }
-            }
-        };
-
-        const difficulties = ["Easy", "Medium", "Hard"];
-        const defaultValues = { "Easy": "100/300", "Medium": "200/400", "Hard": "300/500" };
-
-        const board = document.getElementById('game-board');
+        // 1. DATA STATE
+        let allGameData = [];
+        let scores = { p1: 750, p2: 750 };
         let activeCell = null;
 
-        // Player Scores State
-        let scores = {
-            p1: 750,
-            p2: 750
-        };
+        // Map for Point Values (100/300 etc)
+        const pointMap = { "Easy": "100 / 300", "Medium": "200 / 400", "Hard": "300 / 500" };
 
-        // 2. BUILD THE BOARD
+        // 2. LOAD DATA FROM GOOGLE SHEET
+        function loadGameData() {
+            const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2fNjRxYutbAxV3E0vCpG3bq_RIYFu0FfUgS00ZNb7tvMsemV55SE0JshRvG0aTWmHprD5jvg1I1K/pub?gid=0&single=true&output=csv";
+            
+            Papa.parse(csvUrl, {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    allGameData = results.data;
+                    initBoard(); 
+                }
+            });
+        }
+
+        // 3. BUILD THE BOARD
         function initBoard() {
-            gameData.categories.forEach(cat => {
+            const board = document.getElementById('game-board');
+            board.innerHTML = ""; 
+            
+            const categories = [...new Set(allGameData.map(r => r.Category))].filter(c => c);
+
+            // Build Headers
+            categories.forEach(cat => {
                 const header = document.createElement('div');
                 header.className = 'category-header';
-                
-                // Changed from textarea to a div
-                const editableDiv = document.createElement('div');
-                editableDiv.className = 'category-editable';
-                editableDiv.contentEditable = "true";
-                editableDiv.innerText = cat;
-                
-                header.appendChild(editableDiv);
+                header.innerHTML = `<div class="category-editable" contenteditable="true">${cat}</div>`;
                 board.appendChild(header);
             });
-            // ... rest of the function remains same
 
-            difficulties.forEach(diff => {
-                gameData.categories.forEach((cat, index) => {
+            // Build Cells
+            ["Easy", "Medium", "Hard"].forEach(diff => {
+                categories.forEach(cat => {
+                    const row = allGameData.find(r => r.Category === cat && r.Difficulty === diff);
                     const cell = document.createElement('div');
                     cell.className = 'cell';
                     
                     const input = document.createElement('input');
                     input.type = 'text';
-                    input.value = defaultValues[diff];
+                    input.value = pointMap[diff] || diff; 
+                    input.style.pointerEvents = "none";
                     
-                    input.style.pointerEvents = "none"; 
-
-                    cell.addEventListener('click', () => {
+                    // Left Click: Launch Question
+                    cell.onclick = () => {
                         if (cell.classList.contains('disabled')) return;
-                        
-                        // FIX: Look for .category-editable, not .category-textarea
-                        const categoryElements = document.querySelectorAll('.category-editable');
-                        const currentCatName = categoryElements[index].innerText.trim();
-                        
-                        launchQuestion(currentCatName, diff, cell);
-                    });
+                        launchQuestion(row, cell);
+                    };
 
-                    cell.addEventListener('contextmenu', (e) => {
-                        e.preventDefault(); 
-                        if (cell.classList.contains('disabled')) {
-                            cell.classList.remove('disabled');
-                            input.disabled = false;
-                        } else {
-                            input.style.pointerEvents = "auto"; 
-                            input.focus();
-                            input.select(); 
-                        }
-                    });
-
-                    input.addEventListener('blur', () => {
-                        input.style.pointerEvents = "none";
-                    });
-
-                    input.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter') {
-                            input.blur();
-                        }
-                    });
-
+                    // Right Click: Reset
+                    cell.oncontextmenu = (e) => {
+                        e.preventDefault();
+                        cell.classList.remove('disabled');
+                        input.disabled = false;
+                    };
+                    
                     cell.appendChild(input);
                     board.appendChild(cell);
                 });
             });
         }
 
-        // 3. INTERACTION LOGIC
-        function launchQuestion(categoryName, difficulty, cellElement) {
-            // Find the index of the column that was clicked
-            const categoryElements = Array.from(document.querySelectorAll('.category-editable'));
-            const index = categoryElements.findIndex(el => el.innerText.trim() === categoryName);
+        // 4. QUESTION LOGIC
+        function launchQuestion(row, cellElement) {
+            if (!row) return;
+            const modal = document.getElementById('modal');
+            const textDisplay = document.getElementById('modal-text');
+            const modalContent = document.querySelector('.modal-content');
             
-            // Map index to the original data category name
-            const originalCategoryKey = gameData.categories[index];
+            // Clean up old elements
+            document.querySelectorAll('.dynamic-content').forEach(el => el.remove());
+
+            textDisplay.innerText = row.Question;
             
-            const question = gameData.questions[originalCategoryKey] ? 
-                             gameData.questions[originalCategoryKey][difficulty] : 
-                             "No question loaded.";
-            
-            document.getElementById('modal-text').innerText = question;
-            document.getElementById('modal').style.display = 'flex';
+            // Handle Image
+            if (row.ImageURL && row.ImageURL.trim() !== "") {
+                const img = document.createElement('img');
+                img.src = row.ImageURL;
+                img.className = 'dynamic-content';
+                img.style.maxWidth = "100%";
+                img.style.marginTop = "20px";
+                modalContent.appendChild(img);
+            }
+
+            // Reveal Answer Button
+            const btn = document.createElement('button');
+            btn.innerText = "Reveal Answer";
+            btn.className = "close-btn dynamic-content";
+            btn.style.marginTop = "20px";
+            btn.onclick = () => {
+                const ans = document.createElement('div');
+                ans.className = 'dynamic-content';
+                ans.style.marginTop = "15px";
+                ans.style.fontSize = "1.5rem";
+                ans.style.color = "#ffffff";
+                ans.innerText = "Answer: " + row.Answer;
+                modalContent.appendChild(ans);
+                btn.remove();
+            };
+            modalContent.appendChild(btn);
+
+            modal.style.display = 'flex';
             activeCell = cellElement;
         }
 
@@ -637,121 +646,51 @@
             document.getElementById('modal').style.display = 'none';
             if (activeCell) {
                 activeCell.classList.add('disabled');
-                activeCell.querySelector('input').disabled = true;
                 activeCell = null;
             }
-            
-            // Bring the skip buttons back for the next round
-            document.querySelectorAll('.btn-skip').forEach(btn => {
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'auto';
-            });
         }
 
-        // 4. SCORE TRACKING LOGIC (With Binterman Insured Losses and Ngiam Cursed Wins)
-        function updateScore(player, isAdd) {
-            const wagerInput = document.getElementById(`wager-${player}`);
-            const wagerValue = parseInt(wagerInput.value) || 0;
-            
-            const bonusPanel = document.getElementById(`bonus-panel-${player}`);
-            const cursePanel = document.getElementById(`curse-panel-${player}`);
-            
-            const isBonusActive = bonusPanel && bonusPanel.classList.contains('bonus-active');
-            const isCurseActive = cursePanel && cursePanel.classList.contains('curse-active');
-            
-            if (isAdd) {
-                if (isCurseActive) {
-                    // Ngiam Curse halves the win amount
-                    scores[player] += Math.round(wagerValue / 2);
-                    cursePanel.classList.remove('curse-active');
-                } else {
-                    // Standard win
-                    scores[player] += wagerValue;
-                }
-            } else {
-                if (isBonusActive) {
-                    // Binterman Bonus halves the loss amount
-                    scores[player] -= Math.round(wagerValue / 2);
-                    bonusPanel.classList.remove('bonus-active');
-                } else {
-                    // Standard loss (Still fully penalized under Ngiam curse or normal state)
-                    scores[player] -= wagerValue;
-                }
-                
-                // Clear the curse modifier if active on a loss round as well
-                if (isCurseActive) cursePanel.classList.remove('curse-active');
-            }
-
-            document.getElementById(`score-${player}`).innerText = scores[player];
-            wagerInput.value = '';
+        // 5. SCORE/TIMER (Preserved)
+        function updateScore(p, add) {
+            const w = parseInt(document.getElementById(`wager-${p}`).value) || 0;
+            const b = document.getElementById(`bonus-panel-${p}`).classList.contains('bonus-active');
+            const c = document.getElementById(`curse-panel-${p}`).classList.contains('curse-active');
+            if(add) scores[p] += c ? Math.round(w/2) : w;
+            else scores[p] -= b ? Math.round(w/2) : w;
+            document.getElementById(`score-${p}`).innerText = scores[p];
+            document.getElementById(`wager-${p}`).value = '';
         }
 
-        // Run on load
-        initBoard();
-
-// 5. TIMER LOGIC
-let countdown; 
-
-function startTimer() {
-    clearInterval(countdown); 
-    
-    // Reset audio immediately
-    const countdownSound = document.getElementById("alarm-sound-countdown");
-    const endSound = document.getElementById("alarm-sound-end");
-    countdownSound.pause();
-    countdownSound.currentTime = 0;
-    endSound.pause();
-    endSound.currentTime = 0;
-    
-    let seconds = parseInt(document.getElementById("timerInput").value);
-    if (isNaN(seconds) || seconds < 1) seconds = 30;
-    
-    const display = document.getElementById("timerDisplay");
-    display.innerText = seconds;
-    
-    countdown = setInterval(() => {
-        seconds--;
-        display.innerText = seconds;
-        
-        // --- UPDATED LOGIC ---
-        // Play the sound ONLY when exactly 7 seconds are left
-        if (seconds === 12) {
-            countdownSound.currentTime = 0;
-            countdownSound.play();
-        }
-        
-        // --- Timer Reaches Zero ---
-        if (seconds <= 0) {
+        let countdown;
+        function startTimer() {
             clearInterval(countdown);
-            display.innerText = "0";
-            endSound.play();
+            let s = parseInt(document.getElementById("timerInput").value) || 30;
+            const display = document.getElementById("timerDisplay");
+            countdown = setInterval(() => {
+                s--;
+                display.innerText = s;
+                if(s === 12) document.getElementById("alarm-sound-countdown").play();
+                if(s <= 0) { clearInterval(countdown); document.getElementById("alarm-sound-end").play(); }
+            }, 1000);
         }
-    }, 1000);
-}
 
         function stopTimer() {
-            // Stop the countdown
             clearInterval(countdown);
-            
-            // Stop and reset the countdown audio
-            const countdownSound = document.getElementById("alarm-sound-countdown");
-            countdownSound.pause();
-            countdownSound.currentTime = 0;
-            
-            // Stop and reset the end sound
-            const endSound = document.getElementById("alarm-sound-end");
-            endSound.pause();
-            endSound.currentTime = 0;
+            document.getElementById("alarm-sound-countdown").pause();
+            document.getElementById("alarm-sound-end").pause();
         }
 
-        // 6. MODIFIER TOGGLE LOGIC
-        function toggleBonusGlow(panelElement) {
-            panelElement.classList.toggle('bonus-active');
-        }
+        function toggleBonusGlow(el) { el.classList.toggle('bonus-active'); }
+        function toggleCurseGlow(el) { el.classList.toggle('curse-active'); }
 
-        function toggleCurseGlow(panelElement) {
-            panelElement.classList.toggle('curse-active');
-        }
+        loadGameData();
+        function openRules() {
+    document.getElementById('rules-modal').style.display = 'flex';
+}
+
+function closeRules() {
+    document.getElementById('rules-modal').style.display = 'none';
+}
     </script>
     <audio id="alarm-sound-countdown" src="https://geoffhenao.github.io/geoffamania/drowning-panic-theme.mp3"></audio>
     <audio id="alarm-sound-end" src="https://geoffhenao.github.io/geoffamania/ring-loss.mp3"></audio>
