@@ -13,6 +13,32 @@
 </script>
 
 <style>
+    /* Container for the arrows, sits inside each panel */
+.arrow-container {
+    position: absolute;
+    inset: 4px; /* Keeps them tucked inside the border */
+    pointer-events: none; /* Allows clicks to pass through to the panel */
+    z-index: 5;
+}
+
+/* Base style for the small arrows */
+.directional-arrow {
+    position: absolute;
+    font-size: 20px;
+    font-weight: bold;
+    color: #FFFFFF;
+    cursor: pointer;
+    pointer-events: auto; /* Re-enables clicking on the arrow itself */
+    opacity: 0.3; /* Subtle by default */
+    transition: opacity 0.2s, color 0.2s;
+}
+
+/* Active state */
+.directional-arrow.active {
+    opacity: 1;
+    color: #FF0000;
+    text-shadow: 0 0 8px rgba(85, 153, 255, 0.8);
+}
     @keyframes neonPulse {
     0% {
         box-shadow: 0 0 8px rgba(51, 102, 153, 0.6), inset 0 0 8px rgba(51, 102, 153, 0.4);
@@ -269,6 +295,47 @@ const grid = document.getElementById("grid");
 
 // Generate the 3x3 Grid Elements
 for(let i=0; i<9; i++){
+    // --- DIRECTIONAL ARROW GENERATOR ---
+    const arrowContainer = document.createElement("div");
+    arrowContainer.className = "arrow-container";
+
+    const directions = [
+        { name: 'tl', sym: '↖', r: -1, c: -1, top: '2px', left: '2px' },
+        { name: 't',  sym: '↑', r: -1, c:  0, top: '2px', left: '50%', transform: 'translateX(-50%)' },
+        { name: 'tr', sym: '↗', r: -1, c:  1, top: '2px', right: '2px' },
+        { name: 'l',  sym: '←', r:  0, c: -1, top: '50%', left: '2px', transform: 'translateY(-50%)' },
+        { name: 'r',  sym: '→', r:  0, c:  1, top: '50%', right: '2px', transform: 'translateY(-50%)' },
+        { name: 'bl', sym: '↙', r:  1, c: -1, bottom: '2px', left: '2px' },
+        { name: 'b',  sym: '↓', r:  1, c:  0, bottom: '2px', left: '50%', transform: 'translateX(-50%)' },
+        { name: 'br', sym: '↘', r:  1, c:  1, bottom: '2px', right: '2px' }
+    ];
+
+    const currentRow = Math.floor(i / 3);
+    const currentCol = i % 3;
+
+    directions.forEach(d => {
+        const targetRow = currentRow + d.r;
+        const targetCol = currentCol + d.c;
+
+        // Only create the arrow if the target space is on the board
+        if (targetRow >= 0 && targetRow <= 2 && targetCol >= 0 && targetCol <= 2) {
+            const arrow = document.createElement("div");
+            arrow.className = "directional-arrow";
+            arrow.innerText = d.sym;
+            arrow.style.top = d.top || 'auto';
+            arrow.style.bottom = d.bottom || 'auto';
+            arrow.style.left = d.left || 'auto';
+            arrow.style.right = d.right || 'auto';
+            arrow.style.transform = d.transform || 'none';
+
+            arrow.addEventListener("click", e => {
+                e.stopPropagation();
+                arrow.classList.toggle("active");
+            });
+
+            arrowContainer.appendChild(arrow);
+        }
+    });
     const panel = document.createElement("div");
     panel.className = "panel";
 
@@ -330,7 +397,7 @@ panel.addEventListener("click", e => {
         panel.classList.remove("special-space"); // Clears the neon pulse effect
     });
 
-    panel.append(label, img, text, input);
+    panel.append(label, img, text, input, arrowContainer);
     grid.append(panel);
 }
 
