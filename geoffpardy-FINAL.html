@@ -63,7 +63,7 @@
         }
 
         .main-title-input:focus {
-            outline: 2px dashed #336699;
+           /*  outline: 2px dashed #336699; */
             background: rgba(255,255,255,0.05);
         }
 
@@ -237,7 +237,7 @@
         }
 
         .modifier-title-input:focus {
-            outline: 1px dashed #336699;
+            /* outline: 1px dashed #336699; */
             background: rgba(255,255,255,0.05);
         }
 
@@ -433,7 +433,8 @@
 <div id="header-container" style="text-align: center;">
     <img src="https://geoffhenao.github.io/geoffamania/geoffamania-logo-x.GIF" alt="Geoffamania" style="max-width: 600px; margin-bottom: 10px;">
 </div>
-    <input type="text" class="main-title-input" value="GEO(FF)PARDY!">    <button class="close-btn" onclick="openRules()">View Rules</button>
+    <div class="main-title-input">GEO(FF)PARDY!</div>
+    <button class="close-btn" onclick="openRules()">View Rules</button>
 </div>
 <br>
     <div class="game-container">
@@ -453,12 +454,12 @@
             </div>
 
             <div class="modifier-panel" id="bonus-panel-p1" onclick="toggleBonusGlow(this)">
-                <input type="text" class="modifier-title-input" value="BINTERMAN BONUS" onclick="event.stopPropagation();">
+<div class="modifier-title-input">BINTERMAN BONUS</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P1 Bonus">
             </div>
 
             <div class="modifier-panel" id="curse-panel-p1" onclick="toggleCurseGlow(this)">
-                <input type="text" class="modifier-title-input" value="NGIAM CURSE" onclick="event.stopPropagation();">
+  <div class="modifier-title-input">NGIAM CURSE</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/geoff-by-profbanzi-ryo.PNG" alt="P1 Curse">
             </div>
         </div>
@@ -495,12 +496,12 @@
             </div>
 
             <div class="modifier-panel" id="bonus-panel-p2" onclick="toggleBonusGlow(this)">
-                <input type="text" class="modifier-title-input" value="BINTERMAN BONUS" onclick="event.stopPropagation();">
+ <div class="modifier-title-input">BINTERMAN BONUS</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P2 Bonus">
             </div>
 
             <div class="modifier-panel" id="curse-panel-p2" onclick="toggleCurseGlow(this)">
-                <input type="text" class="modifier-title-input" value="NGIAM CURSE" onclick="event.stopPropagation();">
+<div class="modifier-title-input">NGIAM CURSE</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/geoff-by-profbanzi-ryo.PNG" alt="P2 Curse">
             </div>
         </div>
