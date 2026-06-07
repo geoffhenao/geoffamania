@@ -186,8 +186,8 @@
             fill: currentColor;
         }
 
-        /* Binterman Bonus Panel Styling */
-        .bonus-panel {
+        /* Generic Modifier Panel Layout (Bonus & Curse) */
+        .modifier-panel {
             background-color: var(--panel-bg);
             border: 3px solid var(--blue-jeopardy);
             border-radius: 8px;
@@ -197,24 +197,30 @@
             align-items: center;
             width: 250px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            margin-top: 20px;
+            margin-top: 15px;
             cursor: pointer;
             transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.1s ease;
             box-sizing: border-box;
         }
-
-        /* Glow effect when clicked/active */
-        .bonus-panel.active {
-            border-color: #5599ff;
-            box-shadow: 0 0 25px rgba(85, 153, 255, 0.8), 0 4px 15px rgba(0,0,0,0.5);
-        }
         
-        .bonus-panel:active {
+        .modifier-panel:active {
             transform: scale(0.98);
         }
 
-        /* Editable Bonus Title Input */
-        .bonus-title-input {
+        /* Binterman Blue Glow effect when active */
+        .modifier-panel.bonus-active {
+            border-color: #5599ff;
+            box-shadow: 0 0 25px rgba(85, 153, 255, 0.8), 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Ngiam Red Glow effect when active */
+        .modifier-panel.curse-active {
+            border-color: #ff3333;
+            box-shadow: 0 0 25px rgba(255, 51, 51, 0.8), 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Editable Modifier Title Input */
+        .modifier-title-input {
             background: transparent;
             border: none;
             color: white;
@@ -229,12 +235,12 @@
             cursor: text;
         }
 
-        .bonus-title-input:focus {
+        .modifier-title-input:focus {
             outline: 1px dashed #336699;
             background: rgba(255,255,255,0.05);
         }
 
-        .bonus-image {
+        .modifier-image {
             width: 100%;
             aspect-ratio: 1/1;
             object-fit: cover;
@@ -406,7 +412,7 @@
 </head>
 <body>
 
-    <input type="text" class="main-title-input" value="GE(OFF)PARDY!">
+    <input type="text" class="main-title-input" value="GEO(FF)PARDY!">
 
     <div class="game-container">
         
@@ -424,9 +430,14 @@
                 </div>
             </div>
 
-            <div class="bonus-panel" id="bonus-panel-p1" onclick="toggleBonusGlow(this)">
-                <input type="text" class="bonus-title-input" value="BINTERMAN BONUS" onclick="event.stopPropagation();">
-                <img class="bonus-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P1 Binterman Bonus">
+            <div class="modifier-panel" id="bonus-panel-p1" onclick="toggleBonusGlow(this)">
+                <input type="text" class="modifier-title-input" value="BINTERMAN BONUS" onclick="event.stopPropagation();">
+                <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P1 Bonus">
+            </div>
+
+            <div class="modifier-panel" id="curse-panel-p1" onclick="toggleCurseGlow(this)">
+                <input type="text" class="modifier-title-input" value="NGIAM CURSE" onclick="event.stopPropagation();">
+                <img class="modifier-image" src="https://placehold.co/200x200/222/ff3333?text=Ngiam" alt="P1 Curse">
             </div>
         </div>
 
@@ -458,9 +469,14 @@
                 </div>
             </div>
 
-            <div class="bonus-panel" id="bonus-panel-p2" onclick="toggleBonusGlow(this)">
-                <input type="text" class="bonus-title-input" value="BINTERMAN BONUS" onclick="event.stopPropagation();">
-                <img class="bonus-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P2 Binterman Bonus">
+            <div class="modifier-panel" id="bonus-panel-p2" onclick="toggleBonusGlow(this)">
+                <input type="text" class="modifier-title-input" value="BINTERMAN BONUS" onclick="event.stopPropagation();">
+                <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P2 Bonus">
+            </div>
+
+            <div class="modifier-panel" id="curse-panel-p2" onclick="toggleCurseGlow(this)">
+                <input type="text" class="modifier-title-input" value="NGIAM CURSE" onclick="event.stopPropagation();">
+                <img class="modifier-image" src="https://placehold.co/200x200/222/ff3333?text=Ngiam" alt="P2 Curse">
             </div>
         </div>
 
@@ -597,23 +613,38 @@
             });
         }
 
-        // 4. SCORE TRACKING LOGIC
+        // 4. SCORE TRACKING LOGIC (With Binterman Insured Losses and Ngiam Cursed Wins)
         function updateScore(player, isAdd) {
             const wagerInput = document.getElementById(`wager-${player}`);
             const wagerValue = parseInt(wagerInput.value) || 0;
+            
             const bonusPanel = document.getElementById(`bonus-panel-${player}`);
-            const isBonusActive = bonusPanel && bonusPanel.classList.contains('active');
+            const cursePanel = document.getElementById(`curse-panel-${player}`);
+            
+            const isBonusActive = bonusPanel && bonusPanel.classList.contains('bonus-active');
+            const isCurseActive = cursePanel && cursePanel.classList.contains('curse-active');
             
             if (isAdd) {
-                scores[player] += wagerValue;
+                if (isCurseActive) {
+                    // Ngiam Curse halves the win amount
+                    scores[player] += Math.round(wagerValue / 2);
+                    cursePanel.classList.remove('curse-active');
+                } else {
+                    // Standard win
+                    scores[player] += wagerValue;
+                }
             } else {
                 if (isBonusActive) {
-                    // Halve the wager penalty itself
+                    // Binterman Bonus halves the loss amount
                     scores[player] -= Math.round(wagerValue / 2);
-                    bonusPanel.classList.remove('active');
+                    bonusPanel.classList.remove('bonus-active');
                 } else {
+                    // Standard loss (Still fully penalized under Ngiam curse or normal state)
                     scores[player] -= wagerValue;
                 }
+                
+                // Clear the curse modifier if active on a loss round as well
+                if (isCurseActive) cursePanel.classList.remove('curse-active');
             }
 
             document.getElementById(`score-${player}`).innerText = scores[player];
@@ -650,9 +681,13 @@
             clearInterval(countdown);
         }
 
-        // 6. GLOW TOGGLE LOGIC
+        // 6. MODIFIER TOGGLE LOGIC
         function toggleBonusGlow(panelElement) {
-            panelElement.classList.toggle('active');
+            panelElement.classList.toggle('bonus-active');
+        }
+
+        function toggleCurseGlow(panelElement) {
+            panelElement.classList.toggle('curse-active');
         }
     </script>
 </body>
