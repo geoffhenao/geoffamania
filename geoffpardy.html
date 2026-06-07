@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ge(off)pardy Board</title>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7VTBFP1ZC2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-7VTBFP1ZC2');
+</script>
+
+    <style>
+        :root {
+            --blue-jeopardy: #060ce9;
+            --yellow-jeopardy: #f1c40f;
+            --panel-bg: #222;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #111;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Editable Main Title Styling */
+        .main-title-input {
+            background: transparent;
+            border: none;
+            color: #336699;
+            font-family: 'Arial', sans-serif;
+            font-size: 2.5rem;
+            text-align: center;
+            text-shadow: 2px 2px 0px #000;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 600px;
+            text-transform: uppercase;
+        }
+
+        .main-title-input:focus {
+            outline: 2px dashed #336699;
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Game Layout */
+        .game-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 1400px;
+            gap: 20px;
+        }
+
+        /* Score Tracker Panels */
+        .player-panel {
+            background-color: var(--panel-bg);
+            border: 3px solid var(--blue-jeopardy);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 250px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .player-name {
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 15px;
+            width: 100%;
+            text-transform: uppercase;
+        }
+        
+        .player-name:focus {
+            outline: 1px solid #336699;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            color: #336699;
+            text-shadow: 2px 2px 0px #000;
+            margin-bottom: 20px;
+        }
+
+        .wager-input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            margin-bottom: 15px;
+            background: #333;
+            color: white;
+            border: 2px solid #555;
+            border-radius: 4px;
+        }
+
+        .wager-input:focus {
+            outline: none;
+            border-color: #336699;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .score-btn {
+            flex: 1;
+            padding: 10px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            text-transform: uppercase;
+            transition: opacity 0.2s;
+        }
+
+        .score-btn:hover {
+            opacity: 0.8;
+        }
+
+        .btn-add { background-color: #336699; color: white; }
+        .btn-sub { background-color: #ff0000; color: white; }
+
+        /* Board Styles */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            flex: 1;
+        }
+
+        .category-header {
+            background-color: var(--blue-jeopardy);
+            border: 3px solid white;
+            padding: 0;
+            min-height: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        /* Textarea replaces input for perfect multi-line auto-wrapping text fields */
+        .category-textarea {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            font-size: 0.95rem; /* Clean text size that fits nicely */
+            text-align: center;
+            text-transform: uppercase;
+            box-sizing: border-box;
+            padding: 12px 5px;
+            resize: none; /* Disables manual pulling box size */
+            overflow: hidden; /* Keeps lines clean */
+        }
+
+        .category-textarea:focus {
+            outline: 2px dashed #336699;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .cell {
+            background-color: var(--blue-jeopardy);
+            border: 3px solid white;
+            aspect-ratio: 4/3;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .cell:hover {
+            transform: scale(1.02);
+            border-color: #ff0000;
+        }
+
+        .cell.disabled {
+            background-color: #222;
+            border-color: #444;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none;
+        }
+
+        .cell.disabled input {
+            color: #555;
+            cursor: not-allowed;
+            text-shadow: none;
+        }
+
+        .cell input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.8rem;
+            text-align: center;
+            cursor: pointer;
+            text-shadow: 2px 2px 0px #000;
+            box-sizing: border-box;
+        }
+
+        .cell input:focus {
+            outline: 2px solid #336699;
+            background: rgba(0,0,0,0.5);
+        }
+
+        /* Modal Popup styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .modal-content {
+            background: var(--blue-jeopardy);
+            border: 5px solid white;
+            padding: 40px;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0px 0px 30px rgba(241, 196, 15, 0.4);
+        }
+
+        .modal-question {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .close-btn {
+            background: var(--yellow-jeopardy);
+            color: black;
+            border: none;
+            padding: 10px 25px;
+            font-family: 'Arial', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .close-btn:hover {
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+    <input type="text" class="main-title-input" value="GE(OFF)PARDY!">
+
+    <div class="game-container">
+        
+        <div class="player-panel">
+            <input type="text" class="player-name" value="PLAYER 1">
+            <div class="score-display" id="score-p1">750</div>
+            <input type="number" class="wager-input" id="wager-p1" placeholder="Enter Wager">
+            <div class="btn-group">
+                <button class="score-btn btn-add" onclick="updateScore('p1', true)">+ Win</button>
+                <button class="score-btn btn-sub" onclick="updateScore('p1', false)">- Loss</button>
+            </div>
+        </div>
+
+        <div class="board" id="game-board">
+            </div>
+
+        <div class="player-panel">
+            <input type="text" class="player-name" value="PLAYER 2">
+            <div class="score-display" id="score-p2">750</div>
+            <input type="number" class="wager-input" id="wager-p2" placeholder="Enter Wager">
+            <div class="btn-group">
+                <button class="score-btn btn-add" onclick="updateScore('p2', true)">+ Win</button>
+                <button class="score-btn btn-sub" onclick="updateScore('p2', false)">- Loss</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <div class="modal-question" id="modal-text">Loading question...</div>
+            <button class="close-btn" onclick="closeModal()">Close Window</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. DATA MAPPING
+        const gameData = {
+            categories: ["Wrestling", "Gaming", "Local Eats", "Grab Bag"],
+            questions: {
+                "Wrestling": {
+                    "Easy": "This 'Cleaner' won the inaugural IWGP United States Championship.",
+                    "Medium": "He was known as 'La Sombra' in CMLL before signing with WWE.",
+                    "Hard": "Name the stable founded by Rush in CMLL that later expanded to Japan as Los Ingobernables de Japón."
+                },
+                "Gaming": {
+                    "Easy": "This Nintendo hybrid console lets you play on the TV or on the go.",
+                    "Medium": "In God of War (2018), this is the true giant name of Atreus' mother, Laufey.",
+                    "Hard": "This Ubisoft platforming mascot debuted in 1995 without any limbs."
+                },
+                "Local Eats": {
+                    "Easy": "This Chicago establishment is famous for its Swedish pancakes and lingonberries.",
+                    "Medium": "This Korean fried chicken chain is famous for its signature Soy Garlic and Spicy glazes.",
+                    "Hard": "This historic cash-only counter in Chicago is legendary for its Korean-American breakfasts like kimchi bacon fried rice."
+                },
+                "Grab Bag": {
+                    "Easy": "What is the starting bank total for a standard game of Ge(off)pardy?",
+                    "Medium": "True or False: A Binterman Bonus can be applied to a Whammy penalty.",
+                    "Hard": "When must a player declare they are using a Binterman Bonus?"
+                }
+            }
+        };
+
+        const difficulties = ["Easy", "Medium", "Hard"];
+        const defaultValues = { "Easy": "100/300", "Medium": "200/400", "Hard": "300/500" };
+
+        const board = document.getElementById('game-board');
+        let activeCell = null;
+
+        // Player Scores State
+        let scores = {
+            p1: 750,
+            p2: 750
+        };
+
+        // 2. BUILD THE BOARD
+        function initBoard() {
+            // Render Textarea Headers
+            gameData.categories.forEach(cat => {
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                
+                const textarea = document.createElement('textarea');
+                textarea.className = 'category-textarea';
+                textarea.value = cat;
+                
+                header.appendChild(textarea);
+                board.appendChild(header);
+            });
+
+            // Render Grid Rows by Difficulty
+            difficulties.forEach(diff => {
+                gameData.categories.forEach((cat, index) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = defaultValues[diff];
+                    
+                    // Style to make sure it doesn't block left clicks
+                    input.style.pointerEvents = "none"; 
+
+                    // LEFT CLICK: Always, consistently launches the question modal
+                    cell.addEventListener('click', () => {
+                        const currentCatName = document.querySelectorAll('.category-textarea')[index].value.trim();
+                        launchQuestion(currentCatName, diff, cell);
+                    });
+
+                    // RIGHT CLICK: Turns on editing mode so you can change the points
+                    cell.addEventListener('contextmenu', (e) => {
+                        e.preventDefault(); // Prevents the browser's right-click menu
+                        input.style.pointerEvents = "auto"; // Re-enables clicking for typing
+                        input.focus();
+                        input.select(); // Selects all text for quick overwriting
+                    });
+
+                    // When you click away from editing, lock it back down for normal gameplay
+                    input.addEventListener('blur', () => {
+                        input.style.pointerEvents = "none";
+                    });
+
+                    // Let enter key save the new text and blur it
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            input.blur();
+                        }
+                    });
+
+                    cell.appendChild(input);
+                    board.appendChild(cell);
+                });
+            });
+        }
+        // 3. INTERACTION LOGIC
+        function launchQuestion(category, difficulty, cellElement) {
+            // Check if the current typed text matches a real category key; fallback to old static mapping if altered
+            const lookupKey = gameData.questions[category] ? category : Object.keys(gameData.questions)[Array.from(document.querySelectorAll('.category-textarea')).findIndex(el => el.value.trim() === category)];
+            const question = gameData.questions[lookupKey] ? gameData.questions[lookupKey][difficulty] : "No question loaded for this custom category.";
+            
+            document.getElementById('modal-text').innerText = question;
+            document.getElementById('modal').style.display = 'flex';
+            activeCell = cellElement;
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            if (activeCell) {
+                activeCell.classList.add('disabled');
+                activeCell.querySelector('input').disabled = true;
+                activeCell = null;
+            }
+        }
+
+        // 4. SCORE TRACKING LOGIC
+        function updateScore(player, isAdd) {
+            const wagerInput = document.getElementById(`wager-${player}`);
+            const wagerValue = parseInt(wagerInput.value) || 0;
+            
+            if (isAdd) {
+                scores[player] += wagerValue;
+            } else {
+                scores[player] -= wagerValue;
+            }
+
+            document.getElementById(`score-${player}`).innerText = scores[player];
+            wagerInput.value = '';
+        }
+
+        // Run on load
+        initBoard();
+    </script>
+</body>
+</html>
