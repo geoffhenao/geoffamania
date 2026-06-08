@@ -151,15 +151,18 @@
             outline: none;
             border-color: #336699;
         }
-        /* For Chrome, Safari, Edge, and Opera */
+/* For Chrome, Safari, Edge, and Opera */
 .wager-input::-webkit-outer-spin-button,
-.wager-input::-webkit-inner-spin-button {
+.wager-input::-webkit-inner-spin-button,
+#timerInput::-webkit-outer-spin-button,
+#timerInput::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
 /* For Firefox */
-.wager-input[type="number"] {
+.wager-input[type="number"],
+#timerInput[type="number"] {
     -moz-appearance: textfield;
 }
 
@@ -575,8 +578,8 @@
                 <div id="timerDisplay" style="font-size: 40px; text-align: center; color: #5599ff; font-weight: bold; margin: 10px 0; font-family: monospace;">0</div>
                 <div class="timer-controls" style="display: flex; gap: 5px;">
                     <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center; font-size: 1rem;">
-                    <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">START</button>
-                    <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">STOP</button>
+                    <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">Start</button>
+                    <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">Stop</button>
                 </div>
             </div>
         </div>
