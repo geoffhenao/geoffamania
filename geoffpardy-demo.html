@@ -15,6 +15,11 @@
     </script>
 
     <style>
+        /* Force padding and borders to calculate inside widths */
+        * {
+            box-sizing: border-box;
+        }
+
         /* Timer Control Adjustments */
         #timerDisplay {
             text-shadow: 0 0 10px rgba(85, 153, 255, 0.5);
@@ -55,27 +60,30 @@
             text-align: center;
             text-shadow: 2px 2px 0px #000;
             letter-spacing: 2px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             width: 100%;
             max-width: 600px;
             text-transform: uppercase;
             font-weight: bold;
         }
 
-     /*   .main-title-input:focus {
-             outline: 2px dashed #336699; 
-            background: rgba(255,255,255,0.05);
-        } */
-
         /* Game Layout */
         .game-container {
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
+            justify-content: center;
             align-items: flex-start;
             width: 100%;
-            max-width: 1400px;
-            gap: 20px;
+            max-width: 1450px; /* Slightly increased to fit wider board layout safely */
+            gap: 30px; /* Increased separation between side panels and board */
+        }
+
+        /* Side Wrapper for Player Content */
+        .player-side {
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+            flex-shrink: 0; /* Keeps side panels from compressing the board space */
         }
 
         /* Center Layout Wrapper to Stack Board and Timer cleanly */
@@ -83,7 +91,9 @@
             display: flex;
             flex-direction: column;
             flex: 1;
+            max-width: 850px; /* Explicit maximum bounds for board space */
             gap: 20px;
+            min-width: 0; 
         }
 
         /* Score Tracker Panels */
@@ -97,7 +107,6 @@
             align-items: center;
             width: 250px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            box-sizing: border-box;
         }
 
         .player-name {
@@ -142,6 +151,17 @@
             outline: none;
             border-color: #336699;
         }
+        /* For Chrome, Safari, Edge, and Opera */
+.wager-input::-webkit-outer-spin-button,
+.wager-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Firefox */
+.wager-input[type="number"] {
+    -moz-appearance: textfield;
+}
 
         .btn-group {
             display: flex;
@@ -201,7 +221,6 @@
             margin-top: 15px;
             cursor: pointer;
             transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.1s ease;
-            box-sizing: border-box;
         }
         
         .modifier-panel:active {
@@ -233,12 +252,6 @@
             text-transform: uppercase;
             font-weight: bold;
             letter-spacing: 1px;
-            cursor: text;
-        }
-
-        .modifier-title-input:focus {
-            /* outline: 1px dashed #336699; */
-            background: rgba(255,255,255,0.05);
         }
 
         .modifier-image {
@@ -251,12 +264,24 @@
             pointer-events: none;
         }
 
+        /* Scroll container for responsive board protection */
+        .board-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden; /* Hard locks unwanted height glitches */
+            -webkit-overflow-scrolling: touch;
+            padding: 10px 0; /* Vertical breathing room */
+        }
+
         /* Board Styles */
         .board {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            width: 100%;
+            gap: 16px;
+            width: calc(100% - 20px); /* Factors calculation buffer around structural dimensions */
+            margin: 0 auto;
+            min-width: 620px;
+            padding: 12px; /* Generous glow safe-zone spacing buffer */
         }
 
         .category-header {
@@ -276,40 +301,13 @@
             width: 100%;
             color: white;
             font-family: monospace;
-            font-size: 1.1rem; /* Increased size */
+            font-size: 1.1rem;
             text-align: center;
             text-transform: uppercase;
             font-weight: bold;
             line-height: 1.2;
             word-wrap: break-word;
             outline: none;
-            cursor: text;
-        }
-
-        .category-editable:focus {
-            outline: 1px #336699;
-        }
-
-        .category-textarea {
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            border: none;
-            color: white;
-            font-family: monospace;
-            font-size: 0.95rem;
-            text-align: center;
-            text-transform: uppercase;
-            box-sizing: border-box;
-            padding: 12px 5px;
-            resize: none;
-            overflow: hidden;
-            font-weight: bold;
-        }
-
-        .category-textarea:focus {
-            outline: 2px dashed #336699;
-            background: rgba(0,0,0,0.3);
         }
 
         .cell {
@@ -323,8 +321,9 @@
         }
 
         .cell:hover {
-            transform: scale(1.02);
+            transform: scale(1.04); /* Adjusted slightly for crisp hover visibility */
             border-color: #ff0000;
+            z-index: 5; /* Ensures edge cells break visual stacking cleanly without triggering boxes */
         }
 
         .cell.disabled {
@@ -332,6 +331,11 @@
             border-color: #444;
             cursor: not-allowed;
             box-shadow: none;
+        }
+
+        .cell.disabled:hover {
+            transform: none;
+            border-color: #444;
         }
 
         .cell.disabled input {
@@ -354,21 +358,21 @@
             text-align: center;
             cursor: pointer;
             text-shadow: 2px 2px 0px #000;
-            box-sizing: border-box;
             font-weight: bold;
         }
 
         /* Widget Box for the Timer */
         .info-box {
             background: #222;
-            padding: 16px;
+            padding: 20px;
             border-radius: 6px;
             border: 1px solid #336699;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: calc(100% - 38px);
+            width: calc(100% - 24px); /* Perfectly alignments with the inner boundaries of your grid padding layout */
+            margin: 0 auto;
         }
 
         .info-box h2 {
@@ -393,20 +397,23 @@
             justify-content: center;
             align-items: center;
             z-index: 10;
+            padding: 20px;
         }
 
         .modal-content {
             background: var(--blue-jeopardy);
             border: 5px solid white;
             padding: 40px;
-            width: 80%;
+            width: 100%;
             max-width: 700px;
             text-align: center;
             box-shadow: 0px 0px 30px rgba(241, 196, 15, 0.4);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-question {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin-bottom: 30px;
             line-height: 1.4;
             text-shadow: 2px 2px 0px #000;
@@ -422,10 +429,105 @@
             cursor: pointer;
             text-transform: uppercase;
             font-weight: bold;
+            margin: 5px;
         }
 
         .close-btn:hover {
             background: white;
+        }
+
+        #header-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ========================================== */
+        /* RESPONSIVE MEDIA QUERIES          */
+        /* ========================================== */
+        
+        /* Tablets (iPad) and smaller laptops */
+        @media (max-width: 1200px) {
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 25px;
+            }
+
+            .player-side {
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                width: 100%;
+                gap: 15px;
+            }
+
+            .modifier-panel {
+                margin-top: 0;
+                width: 220px;
+                padding: 10px;
+            }
+            
+            .player-panel {
+                width: 220px;
+                height: 255px;
+                padding: 15px;
+            }
+
+            .score-display {
+                font-size: 2.8rem;
+                margin-bottom: 10px;
+            }
+
+            .center-column {
+                width: 100%;
+                max-width: 900px;
+            }
+        }
+
+        /* Mobile phones */
+        @media (max-width: 680px) {
+            body {
+                padding: 10px;
+            }
+
+            .main-title-input {
+                font-size: 1.8rem;
+                margin-bottom: 10px;
+            }
+
+            .player-side {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                gap: 10px;
+            }
+
+            .player-panel, .modifier-panel {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .modifier-panel {
+                display: grid;
+                grid-template-columns: 1fr 60px;
+                gap: 10px;
+                align-items: center;
+                text-align: left;
+            }
+
+            .modifier-title-input {
+                margin-bottom: 0;
+                text-align: left;
+                font-size: 1rem;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .modal-question {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -435,11 +537,10 @@
 </div>
     <div class="main-title-input">GEO(FF)PARDY!</div>
     <button class="close-btn" onclick="openRules()">View Rules</button>
-</div>
 <br>
     <div class="game-container">
         
-        <div style="display: flex; flex-direction: column;">
+        <div class="player-side">
             <div class="player-panel">
                 <input type="text" class="player-name" value="PLAYER 1">
                 <div class="score-display" id="score-p1">750</div>
@@ -454,34 +555,33 @@
             </div>
 
             <div class="modifier-panel" id="bonus-panel-p1" onclick="toggleBonusGlow(this)">
-<div class="modifier-title-input">BINTERMAN BONUS</div>
+                <div class="modifier-title-input">BINTERMAN BONUS</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P1 Bonus">
             </div>
 
             <div class="modifier-panel" id="curse-panel-p1" onclick="toggleCurseGlow(this)">
-  <div class="modifier-title-input">NGIAM CURSE</div>
+                <div class="modifier-title-input">NGIAM CURSE</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/geoff-by-profbanzi-ryo.PNG" alt="P1 Curse">
             </div>
         </div>
 
         <div class="center-column">
-            
-            <div class="board" id="game-board"></div>
+            <div class="board-scroll-wrapper">
+                <div class="board" id="game-board"></div>
+            </div>
 
             <div class="info-box">
                 <h2>Timer</h2>
                 <div id="timerDisplay" style="font-size: 40px; text-align: center; color: #5599ff; font-weight: bold; margin: 10px 0; font-family: monospace;">0</div>
                 <div class="timer-controls" style="display: flex; gap: 5px;">
                     <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center; font-size: 1rem;">
-                    <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; width: 80px;">Start</button>
-                    <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; width: 80px;">Stop</button>
+                    <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">Start</button>
+                    <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">Stop</button>
                 </div>
-                
             </div>
         </div>
         
-            
-        <div style="display: flex; flex-direction: column;">
+        <div class="player-side">
             <div class="player-panel">
                 <input type="text" class="player-name" value="PLAYER 2">
                 <div class="score-display" id="score-p2">750</div>
@@ -496,12 +596,12 @@
             </div>
 
             <div class="modifier-panel" id="bonus-panel-p2" onclick="toggleBonusGlow(this)">
- <div class="modifier-title-input">BINTERMAN BONUS</div>
+                <div class="modifier-title-input">BINTERMAN BONUS</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/8-bit-binterman-T.png" alt="P2 Bonus">
             </div>
 
             <div class="modifier-panel" id="curse-panel-p2" onclick="toggleCurseGlow(this)">
-<div class="modifier-title-input">NGIAM CURSE</div>
+                <div class="modifier-title-input">NGIAM CURSE</div>
                 <img class="modifier-image" src="https://geoffhenao.github.io/geoffamania/geoff-by-profbanzi-ryo.PNG" alt="P2 Curse">
             </div>
         </div>
@@ -514,22 +614,22 @@
             <button class="close-btn" onclick="closeModal()">Close Window</button><br>
         </div>
     </div>
-<div class="modal-overlay" id="rules-modal">
-    <div class="modal-content">
-        <button class="close-btn" onclick="closeRules()">Close Rules</button>
-        <div id="rules-text" style="margin-top: 30px; text-align: left; line-height: 1.6; font-size: 1.2rem;">
-            <h3 style="text-align: center;">How to Play Geo(ff)pardy:</h3>
-            <p style="font-size: 15px;">Players start with 750 points and must wager points to answer a question. If they get it right, they will be rewarded with the points they wagered. If they get it wrong, they lose the wagered points. There are four categories, with three difficulties per category. There will be both minimum and maximum wagers for each difficulty:
-<p></p>
-Easy (100/300) Medium (200/400) Hard (300/500)
-<p></p>
-<p></p><p style="font-size: 15px;">If a player has fewer points than the minimum, they have to wager their entire total amount. The game will go on until all questions are cleared OR a player eliminates themselves.
-            <p><p style="font-size: 15px;">1 Skip Per Player - Each player is allowed one skip; however, while you keep your bet when you skip, it opens the question up for the other player to answer. If they get it right, they will get half the minimum points for that question. Example: The player skips a Hard (300) question; if their opponent answers it correctly, they will get 150.</p>
-            <p><p style="font-size: 15px;">1 NGIAM - The mask beckons, and I can’t resist the dark side. NGIAM returns to ruin someone’s fucking night. The player loses their turn (but keeps their points); however, they only get half the points they wager on their next turn. Example: Player bets 300 on a Medium question, they’ll only get 150 if correct; if they get it wrong, they lose the full 300.</p>
-            <p><p style="font-size: 15px;">1 Binterman Bonus - The player can either take the points OR forego the points and gain the Binterman Bonus upon a right answer. For one future wrong answer, they can choose to use the Binterman Bonus and halve the amount of points lost. This must be declared at the start of your move. Example: The player uses a Binterman Bonus, wagered 500, and got the question wrong - they’ll instead only lose 250. A Binterman Bonus can not be used while NGIAM is around.</p>
+
+    <div class="modal-overlay" id="rules-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeRules()">Close Rules</button>
+            <div id="rules-text" style="margin-top: 30px; text-align: left; line-height: 1.6; font-size: 1.2rem;">
+                <h3 style="text-align: center;">How to Play Geo(ff)pardy:</h3>
+                <p style="font-size: 15px;">Players start with 750 points and must wager points to answer a question. If they get it right, they will be rewarded with the points they wagered. If they get it wrong, they lose the wagered points. There are four categories, with three difficulties per category. There will be both minimum and maximum wagers for each difficulty:</p>
+                <p style="font-size: 15px; font-weight: bold; text-align: center;">Easy (100/300) | Medium (200/400) | Hard (300/500)</p>
+                <p style="font-size: 15px;">If a player has fewer points than the minimum, they have to wager their entire total amount. The game will go on until all questions are cleared OR a player eliminates themselves.</p>
+                <p style="font-size: 15px;"><strong>1 Skip Per Player</strong> - Each player is allowed one skip; however, while you keep your bet when you skip, it opens the question up for the other player to answer. If they get it right, they will get half the minimum points for that question. Example: The player skips a Hard (300) question; if their opponent answers it correctly, they will get 150.</p>
+                <p style="font-size: 15px;"><strong>1 NGIAM</strong> - NGIAM returns to ruin someone’s fucking night. The player loses their turn (but keeps their points); however, they only get half the points they wager on their next turn. Example: Player bets 300 on a Medium question, they’ll only get 150 if correct; if they get it wrong, they lose the full 300.</p>
+                <p style="font-size: 15px;"><strong>1 Binterman Bonus</strong> - The player can either take the points OR forego the points and gain the Binterman Bonus upon a right answer. For one future wrong answer, they can choose to use the Binterman Bonus and halve the amount of points lost. This must be declared at the start of your move. Example: The player uses a Binterman Bonus, wagered 500, and got the question wrong - they’ll instead only lose 250. A Binterman Bonus can not be used while a NGIAM Curse is active.</p>
+            </div>
         </div>
     </div>
-</div>
+
     <script>
         // 1. DATA STATE
         let allGameData = [];
@@ -537,7 +637,7 @@ Easy (100/300) Medium (200/400) Hard (300/500)
         let activeCell = null;
 
         // Map for Point Values (100/300 etc)
-        const pointMap = { "Easy": "100 / 300", "Medium": "200 / 400", "Hard": "300 / 500" };
+        const pointMap = { "Easy": "100/300", "Medium": "200/400", "Hard": "300/500" };
 
         // 2. LOAD DATA FROM GOOGLE SHEET
         function loadGameData() {
@@ -564,7 +664,7 @@ Easy (100/300) Medium (200/400) Hard (300/500)
             categories.forEach(cat => {
                 const header = document.createElement('div');
                 header.className = 'category-header';
-                header.innerHTML = `<div class="category-editable" contenteditable="true">${cat}</div>`;
+                header.innerHTML = `<div class="category-editable" contenteditable="false">${cat}</div>`;
                 board.appendChild(header);
             });
 
@@ -618,6 +718,7 @@ Easy (100/300) Medium (200/400) Hard (300/500)
                 img.className = 'dynamic-content';
                 img.style.maxWidth = "100%";
                 img.style.marginTop = "20px";
+                img.style.borderRadius = "4px";
                 modalContent.appendChild(img);
             }
 
@@ -632,7 +733,7 @@ Easy (100/300) Medium (200/400) Hard (300/500)
                 ans.style.marginTop = "15px";
                 ans.style.fontSize = "1.5rem";
                 ans.style.color = "#ffffff";
-                ans.innerText = "Answer: " + row.Answer;
+                ans.innerText = "" + row.Answer;
                 modalContent.appendChild(ans);
                 btn.remove();
             };
@@ -684,13 +785,14 @@ Easy (100/300) Medium (200/400) Hard (300/500)
         function toggleCurseGlow(el) { el.classList.toggle('curse-active'); }
 
         loadGameData();
+        
         function openRules() {
-    document.getElementById('rules-modal').style.display = 'flex';
-}
+            document.getElementById('rules-modal').style.display = 'flex';
+        }
 
-function closeRules() {
-    document.getElementById('rules-modal').style.display = 'none';
-}
+        function closeRules() {
+            document.getElementById('rules-modal').style.display = 'none';
+        }
     </script>
     <audio id="alarm-sound-countdown" src="https://geoffhenao.github.io/geoffamania/drowning-panic-theme.mp3"></audio>
     <audio id="alarm-sound-end" src="https://geoffhenao.github.io/geoffamania/ring-loss.mp3"></audio>
