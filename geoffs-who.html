@@ -24,6 +24,12 @@ button:hover {
 input[type="number"]::-webkit-inner-spin-button {
     opacity: 1;
 }
+
+/* Ensure font family uniformity for timer control buttons */
+.timer-controls button {
+    font-family: monospace !important;
+}
+
     /* Container for the arrows, sits inside each panel */
 .arrow-container {
     position: absolute;
@@ -179,7 +185,7 @@ body {
     width: 100%;
     height: 250px;
     background: transparent;
-   /*  border: 2px dashed #336699; */
+   /* border: 2px dashed #336699; */
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -278,9 +284,9 @@ body {
     <h2>Timer</h2>
     <div id="timerDisplay" style="font-size: 40px; text-align: center; color: #5599ff; font-weight: bold; margin: 10px 0; font-family: monospace;">0</div>
     <div class="timer-controls" style="display: flex; gap: 5px;">
-        <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center;">
-        <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; flex: 1;">Start</button>
-        <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; flex: 1;">Stop</button>
+        <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center; font-size: 1rem; font-family: monospace;">
+        <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">Start</button>
+        <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">Stop</button>
     </div>
 </div>
         <div class="info-box">
@@ -487,33 +493,29 @@ mediaSlot2.addEventListener("contextmenu", e => {
     mediaLabel2.style.display = "block";
     mediaInput2.value = "";
 });
-let countdown;
 
+let countdown;
 function startTimer() {
-    clearInterval(countdown); // Stop any existing timer
-    let seconds = parseInt(document.getElementById("timerInput").value);
-    
-    // Safety check
-    if (isNaN(seconds) || seconds < 1) seconds = 30;
-    
+    clearInterval(countdown);
+    let s = parseInt(document.getElementById("timerInput").value) || 30;
     const display = document.getElementById("timerDisplay");
-    display.innerText = seconds;
-    
     countdown = setInterval(() => {
-        seconds--;
-        display.innerText = seconds;
-        
-        if (seconds <= 0) {
-            clearInterval(countdown);
-            display.innerText = "0";
-        }
+        s--;
+        display.innerText = s;
+        if(s === 12) document.getElementById("alarm-sound-countdown").play();
+        if(s <= 0) { clearInterval(countdown); document.getElementById("alarm-sound-end").play(); }
     }, 1000);
 }
 
 function stopTimer() {
     clearInterval(countdown);
+    document.getElementById("alarm-sound-countdown").pause();
+    document.getElementById("alarm-sound-end").pause();
 }
 </script>
+
+<audio id="alarm-sound-countdown" src="https://geoffhenao.github.io/geoffamania/drowning-panic-theme.mp3"></audio>
+<audio id="alarm-sound-end" src="https://geoffhenao.github.io/geoffamania/ring-loss.mp3"></audio>
 
 </body>
 </html>
