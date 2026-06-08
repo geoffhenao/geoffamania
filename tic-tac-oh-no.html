@@ -24,6 +24,23 @@ button:hover {
 input[type="number"]::-webkit-inner-spin-button {
     opacity: 1;
 }
+
+/* Ensure font family uniformity for timer control buttons */
+.timer-controls button {
+    font-family: monospace !important;
+}
+  /* For Chrome, Safari, Edge, and Opera */
+#timerInput::-webkit-outer-spin-button,
+#timerInput::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Firefox */
+#timerInput[type="number"] {
+    -moz-appearance: textfield;
+}
+
     /* Container for the arrows, sits inside each panel */
 .arrow-container {
     position: absolute;
@@ -179,7 +196,7 @@ body {
     width: 100%;
     height: 250px;
     background: transparent;
-   /*  border: 2px dashed #336699; */
+   /* border: 2px dashed #336699; */
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -278,9 +295,9 @@ body {
     <h2>Timer</h2>
     <div id="timerDisplay" style="font-size: 40px; text-align: center; color: #5599ff; font-weight: bold; margin: 10px 0; font-family: monospace;">0</div>
     <div class="timer-controls" style="display: flex; gap: 5px;">
-        <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center;">
-        <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; flex: 1;">Start</button>
-        <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; flex: 1;">Stop</button>
+        <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center; font-size: 1rem; font-family: monospace;">
+        <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">START</button>
+        <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">STOP</button>
     </div>
 </div>
         <div class="info-box">
