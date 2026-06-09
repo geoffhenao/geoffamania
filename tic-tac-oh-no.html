@@ -69,22 +69,22 @@ input[type="number"]::-webkit-inner-spin-button {
 }
     @keyframes neonPulse {
     0% {
-        box-shadow: 0 0 8px rgba(51, 102, 153, 0.6), inset 0 0 8px rgba(51, 102, 153, 0.4);
-        border-color: #336699;
+        box-shadow: 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.6)), inset 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.4));
+        border-color: var(--glow-dim, #336699);
     }
     50% {
-        box-shadow: 0 0 20px rgba(51, 102, 153, 0.9), inset 0 0 15px rgba(51, 102, 153, 0.6);
-        border-color: #5599ff;
+        box-shadow: 0 0 20px var(--glow-bright, rgba(51, 102, 153, 0.9)), inset 0 0 15px var(--glow-bright, rgba(51, 102, 153, 0.6));
+        border-color: var(--glow-bright, #5599ff);
     }
     100% {
-        box-shadow: 0 0 8px rgba(51, 102, 153, 0.6), inset 0 0 8px rgba(51, 102, 153, 0.4);
-        border-color: #336699;
+        box-shadow: 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.6)), inset 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.4));
+        border-color: var(--glow-dim, #336699);
     }
 }
 
 .panel.special-space {
     animation: neonPulse 2s infinite ease-in-out;
-    background: rgba(51, 102, 153, 0.15) !important;
+    background: var(--glow-bg, rgba(51, 102, 153, 0.15)) !important;
     z-index: 5;
 }
 body {
@@ -331,6 +331,14 @@ body {
 <script>
 const grid = document.getElementById("grid");
 
+// Configuration array for dynamic multi-color shifts
+const glowStates = [
+    { dim: "", bright: "", bg: "" },                                                // State 0: None
+    { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" },          // State 1: Blue (Original setup)
+    { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },             // State 2: Red
+    { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }              // State 3: Green
+];
+
 // Generate the 3x3 Grid Elements
 for(let i=0; i<9; i++){
     // --- DIRECTIONAL ARROW GENERATOR ---
@@ -374,8 +382,12 @@ for(let i=0; i<9; i++){
             arrowContainer.appendChild(arrow);
         }
     });
+    
     const panel = document.createElement("div");
     panel.className = "panel";
+
+    // Per-panel localized variable to cleanly monitor layout color loops
+    let colorState = 0;
 
     const label = document.createElement("div");
     label.className = "label";
@@ -409,11 +421,25 @@ for(let i=0; i<9; i++){
         load(e.dataTransfer.files[0]);
     });
 
-panel.addEventListener("click", e => {
+    panel.addEventListener("click", e => {
         if (e.shiftKey) {
             e.preventDefault();
             e.stopPropagation(); // Stops the file dialog box from opening
-            panel.classList.toggle("special-space");
+            
+            // Loop functionality state indexing
+            colorState = (colorState + 1) % 4;
+            
+            if (colorState === 0) {
+                panel.classList.remove("special-space");
+                panel.style.removeProperty("--glow-dim");
+                panel.style.removeProperty("--glow-bright");
+                panel.style.removeProperty("--glow-bg");
+            } else {
+                panel.classList.add("special-space");
+                panel.style.setProperty("--glow-dim", glowStates[colorState].dim);
+                panel.style.setProperty("--glow-bright", glowStates[colorState].bright);
+                panel.style.setProperty("--glow-bg", glowStates[colorState].bg);
+            }
             return;
         }
 
@@ -433,6 +459,12 @@ panel.addEventListener("click", e => {
         text.value = "";
         input.value = "";
         panel.classList.remove("special-space"); // Clears the neon pulse effect
+        
+        // Reset custom variable loops on dynamic panel wipeout
+        colorState = 0;
+        panel.style.removeProperty("--glow-dim");
+        panel.style.removeProperty("--glow-bright");
+        panel.style.removeProperty("--glow-bg");
     });
 
     panel.append(label, img, text, input, arrowContainer);
