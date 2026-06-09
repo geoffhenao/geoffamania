@@ -640,7 +640,7 @@
         let activeCell = null;
 
         // Map for Point Values (100/300 etc)
-        const pointMap = { "Easy": "100/300", "Medium": "200/400", "Hard": "300/500" };
+        const pointMap = { "Easy": "EASY", "Medium": "MEDIUM", "Hard": "HARD" };
 
         // 2. LOAD DATA FROM GOOGLE SHEET
         function loadGameData() {
@@ -731,6 +731,8 @@
             btn.className = "close-btn dynamic-content";
             btn.style.marginTop = "20px";
             btn.onclick = () => {
+                stopTimer(); // <-- Safely stops countdown and SFX when answer is revealed
+                
                 const ans = document.createElement('div');
                 ans.className = 'dynamic-content';
                 ans.style.marginTop = "15px";
@@ -744,10 +746,13 @@
 
             modal.style.display = 'flex';
             activeCell = cellElement;
+
+            startTimer(); // <-- Safely triggers countdown as soon as the window opens
         }
 
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
+            stopTimer(); // <-- Safety net to stop timer if window is closed early
             if (activeCell) {
                 activeCell.classList.add('disabled');
                 activeCell = null;
@@ -767,6 +772,10 @@
 
         let countdown;
         function startTimer() {
+            // Force audio tracks to 50% volume right as the timer initializes
+            document.getElementById("alarm-sound-countdown").volume = 0.5;
+            document.getElementById("alarm-sound-end").volume = 0.5;
+
             clearInterval(countdown);
             let s = parseInt(document.getElementById("timerInput").value) || 30;
             const display = document.getElementById("timerDisplay");
