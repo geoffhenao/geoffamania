@@ -15,6 +15,26 @@
     </script>
 
     <style>
+        @keyframes neonPulse {
+    0% {
+        box-shadow: 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.6)), inset 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.4));
+        border-color: var(--glow-dim, #336699);
+    }
+    50% {
+        box-shadow: 0 0 20px var(--glow-bright, rgba(51, 102, 153, 0.9)), inset 0 0 15px var(--glow-bright, rgba(51, 102, 153, 0.6));
+        border-color: var(--glow-bright, #5599ff);
+    }
+    100% {
+        box-shadow: 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.6)), inset 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.4));
+        border-color: var(--glow-dim, #336699);
+    }
+}
+
+.special-space {
+    animation: neonPulse 2s infinite ease-in-out;
+    background: var(--glow-bg, rgba(51, 102, 153, 0.15)) !important;
+    z-index: 5;
+}
         /* Force padding and borders to calculate inside widths */
         * {
             box-sizing: border-box;
@@ -325,7 +345,7 @@
 
         .cell:hover {
             transform: scale(1.04); /* Adjusted slightly for crisp hover visibility */
-            border-color: #ff0000;
+            border-color: #ffffff;
             z-index: 5; /* Ensures edge cells break visual stacking cleanly without triggering boxes */
         }
 
@@ -622,14 +642,7 @@
         <div class="modal-content">
             <button class="close-btn" onclick="closeRules()">Close Rules</button>
             <div id="rules-text" style="margin-top: 30px; text-align: left; line-height: 1.6; font-size: 1.2rem;">
-                <h3 style="text-align: center;">How to Play Geo(ff)pardy:</h3>
-                <p style="font-size: 15px;">Players start with 750 points and must wager points to answer a question. If they get it right, they will be rewarded with the points they wagered. If they get it wrong, they lose the wagered points. There are four categories, three difficulties per category, and minimum and maximum wagers for each difficulty:</p>
-                <p style="font-size: 15px; font-weight: bold; text-align: center;">Easy (100/300) | Medium (200/400) | Hard (300/500)</p>
-                <p style="font-size: 15px;">If a player has fewer points than the minimum, they have to wager their entire total amount to continue. The game will go on until all questions are cleared OR a player has been eliminated.</p>
-                <p style="font-size: 15px;"><strong>1 Skip Per Player</strong> - Each player is allowed one skip; however, while you keep your bet when you skip, it opens the question up for the other player to answer. If they get it right, they will get half the minimum points for that question. Example: The player skips a Hard (300) question; if their opponent answers it correctly, they will get 150.</p>
-                <p style="font-size: 15px;"><strong>1 Not Geoff in a Mask (NGIAM) Curse</strong> - NGIAM returns to ruin someone’s night. The player loses their turn (but keeps their points); however, they only get half the points they wager on their next turn. Example: Player bets 300 on a Medium question, they will only get 150 if correct; if they get it wrong, they lose the full 300.</p>
-                <p style="font-size: 15px;"><strong>1 Binterman Bonus</strong> - The player can either take the points OR forego the points and gain the Binterman Bonus upon a right answer. For one future wrong answer, they can choose to use the Binterman Bonus and halve the amount of points lost. This must be declared at the start of your move. Example: The player uses a Binterman Bonus, wagered 500, and got the question wrong - they will instead only lose 250. A Binterman Bonus can not be used while a NGIAM Curse is active.</p>
-            </div>
+                </div>
         </div>
     </div>
 
@@ -639,7 +652,7 @@
         let scores = { p1: 750, p2: 750 };
         let activeCell = null;
 
-        // Map for Point Values (100/300 etc)
+        // Map for Point Values (100/300 etc) - if grid size is increased, make sure to add titles + display text here
         const pointMap = { "Easy": "EASY", "Medium": "MEDIUM", "Hard": "HARD" };
 
         // 2. LOAD DATA FROM GOOGLE SHEET
@@ -671,20 +684,51 @@
                 board.appendChild(header);
             });
 
-            // Build Cells
+            // Configuration array for dynamic multi-color shifts
+            const glowStates = [
+                { dim: "", bright: "", bg: "" },                                                // State 0: None
+                { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" },          // State 1: Blue
+                { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },             // State 2: Red
+                { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }              // State 3: Green
+            ];
+
+            // Build Cells (Add more categories here to increase the grid size)
             ["Easy", "Medium", "Hard"].forEach(diff => {
                 categories.forEach(cat => {
                     const row = allGameData.find(r => r.Category === cat && r.Difficulty === diff);
                     const cell = document.createElement('div');
                     cell.className = 'cell';
                     
+                    // Track color state locally for this specific cell
+                    let colorState = 0;
+
                     const input = document.createElement('input');
                     input.type = 'text';
                     input.value = pointMap[diff] || diff; 
                     input.style.pointerEvents = "none";
                     
-                    // Left Click: Launch Question
-                    cell.onclick = () => {
+                    // Left Click: Launch Question OR Cycle Colors if Shift is held
+                    cell.onclick = (e) => {
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            
+                            // Cycle through states 0 to 3
+                            colorState = (colorState + 1) % 4;
+                            
+                            if (colorState === 0) {
+                                cell.classList.remove("special-space");
+                                cell.style.removeProperty("--glow-dim");
+                                cell.style.removeProperty("--glow-bright");
+                                cell.style.removeProperty("--glow-bg");
+                            } else {
+                                cell.classList.add("special-space");
+                                cell.style.setProperty("--glow-dim", glowStates[colorState].dim);
+                                cell.style.setProperty("--glow-bright", glowStates[colorState].bright);
+                                cell.style.setProperty("--glow-bg", glowStates[colorState].bg);
+                            }
+                            return; // Stop execution here so the modal doesn't open!
+                        }
+
                         if (cell.classList.contains('disabled')) return;
                         launchQuestion(row, cell);
                     };
@@ -693,6 +737,14 @@
                     cell.oncontextmenu = (e) => {
                         e.preventDefault();
                         cell.classList.remove('disabled');
+                        cell.classList.remove("special-space"); // Clear glow on reset
+                        
+                        // Reset color tracking
+                        colorState = 0;
+                        cell.style.removeProperty("--glow-dim");
+                        cell.style.removeProperty("--glow-bright");
+                        cell.style.removeProperty("--glow-bg");
+                        
                         input.disabled = false;
                     };
                     
@@ -712,9 +764,15 @@
             // Clean up old elements
             document.querySelectorAll('.dynamic-content').forEach(el => el.remove());
 
-            textDisplay.innerText = row.Question;
+            // 1. Create a dummy element to parse the string from Google Sheets
+            const parser = new DOMParser();
+            const decodedDoc = parser.parseFromString(row.Question, 'text/html');
+            const decodedString = decodedDoc.body.textContent || decodedDoc.body.innerText;
+
+            // 2. Inject the completely unescaped HTML directly into the display
+            textDisplay.innerHTML = decodedString;
             
-            // Handle Image
+            // Handle first Image from ImageURL column
             if (row.ImageURL && row.ImageURL.trim() !== "") {
                 const img = document.createElement('img');
                 img.src = row.ImageURL;
@@ -733,6 +791,18 @@
             btn.onclick = () => {
                 stopTimer(); // <-- Safely stops countdown and SFX when answer is revealed
                 
+                // 1. Handle Second Image Column (ImageURL2) AFTER clicking reveal
+                if (row.ImageURL2 && row.ImageURL2.trim() !== "") {
+                    const img2 = document.createElement('img');
+                    img2.src = row.ImageURL2;
+                    img2.className = 'dynamic-content';
+                    img2.style.maxWidth = "100%";
+                    img2.style.marginTop = "20px";
+                    img2.style.borderRadius = "4px";
+                    modalContent.appendChild(img2);
+                }
+
+                // 2. Display the Answer Text
                 const ans = document.createElement('div');
                 ans.className = 'dynamic-content';
                 ans.style.marginTop = "15px";
@@ -740,6 +810,7 @@
                 ans.style.color = "#ffffff";
                 ans.innerText = "" + row.Answer;
                 modalContent.appendChild(ans);
+                
                 btn.remove();
             };
             modalContent.appendChild(btn);
@@ -799,12 +870,80 @@
         loadGameData();
         
         function openRules() {
+            const rulesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbhFuSdU-gISkGnD1PO5RbSKGbvOyTTL88VBfjP2aNmaaGeNbqrNgv0GIvVeqBqwpK_w7pfn1GQa5J/pub?gid=1063342345&single=true&output=csv";
+            const rulesContainer = document.getElementById('rules-text');
+            
+            rulesContainer.innerHTML = "<p style='text-align:center;'>Loading rules...</p>";
+            
+            Papa.parse(rulesUrl, {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    let html = `<h3 style="text-align: center;">How to Play Geo(ff)pardy:</h3>`;
+                    
+                    results.data.forEach(row => {
+                        if (row.RuleText && row.RuleText.trim() !== "") {
+                            html += `<p style="font-size: 15px; margin-bottom: 12px;">${row.RuleText}</p>`;
+                        }
+                    });
+                    
+                    rulesContainer.innerHTML = html;
+                },
+                error: function(err) {
+                    rulesContainer.innerHTML = "<p style='color:red; text-align:center;'>Error loading rules from Google Sheets.</p>";
+                }
+            });
+            
             document.getElementById('rules-modal').style.display = 'flex';
         }
 
         function closeRules() {
             document.getElementById('rules-modal').style.display = 'none';
         }
+
+        // PLAYER PANEL COLOR CYCLING
+        document.querySelectorAll('.player-panel').forEach(panel => {
+            let colorState = 0;
+            const glowStates = [
+                { dim: "", bright: "", bg: "" },                                       // State 0: Default
+                { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" }, // State 1: Blue
+                { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },    // State 2: Red
+                { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }     // State 3: Green
+            ];
+
+            panel.addEventListener('click', function(e) {
+                // Check if the Shift key is held during the click
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    
+                    colorState = (colorState + 1) % 4; // Cycle 0 -> 1 -> 2 -> 3 -> 0
+                    
+                    if (colorState === 0) {
+                        panel.classList.remove("special-space");
+                        panel.style.removeProperty("--glow-dim");
+                        panel.style.removeProperty("--glow-bright");
+                        panel.style.removeProperty("--glow-bg");
+                    } else {
+                        panel.classList.add("special-space");
+                        panel.style.setProperty("--glow-dim", glowStates[colorState].dim);
+                        panel.style.setProperty("--glow-bright", glowStates[colorState].bright);
+                        panel.style.setProperty("--glow-bg", glowStates[colorState].bg);
+                    }
+                }
+            });
+
+            // Right-click shortcut to quickly clear a panel's color back to default
+            panel.addEventListener('contextmenu', function(e) {
+                if (panel.classList.contains('special-space')) {
+                    e.preventDefault();
+                    colorState = 0;
+                    panel.classList.remove("special-space");
+                    panel.style.removeProperty("--glow-dim");
+                    panel.style.removeProperty("--glow-bright");
+                    panel.style.removeProperty("--glow-bg");
+                }
+            });
+        });
     </script>
     <audio id="alarm-sound-countdown" src="https://geoffhenao.github.io/geoffamania/drowning-panic-theme.mp3"></audio>
     <audio id="alarm-sound-end" src="https://geoffhenao.github.io/geoffamania/ring-loss.mp3"></audio>
