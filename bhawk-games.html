@@ -749,7 +749,7 @@
             // Clean up old elements
             document.querySelectorAll('.dynamic-content').forEach(el => el.remove());
 
-            textDisplay.innerText = row.Question;
+            textDisplay.innerHTML = row.Question;
             
             // Handle Image
             if (row.ImageURL && row.ImageURL.trim() !== "") {
