@@ -749,7 +749,7 @@
             // Clean up old elements
             document.querySelectorAll('.dynamic-content').forEach(el => el.remove());
 
-            textDisplay.innerHTML = row.Question;
+            textDisplay.innerText = row.Question;
             
             // Handle Image
             if (row.ImageURL && row.ImageURL.trim() !== "") {
@@ -770,6 +770,18 @@
             btn.onclick = () => {
                 stopTimer(); // <-- Safely stops countdown and SFX when answer is revealed
                 
+                // 1. Handle Second Image Column (ImageURL2) AFTER clicking reveal
+                if (row.ImageURL2 && row.ImageURL2.trim() !== "") {
+                    const img2 = document.createElement('img');
+                    img2.src = row.ImageURL2;
+                    img2.className = 'dynamic-content';
+                    img2.style.maxWidth = "100%";
+                    img2.style.marginTop = "20px";
+                    img2.style.borderRadius = "4px";
+                    modalContent.appendChild(img2);
+                }
+
+                // 2. Display the Answer Text
                 const ans = document.createElement('div');
                 ans.className = 'dynamic-content';
                 ans.style.marginTop = "15px";
@@ -777,6 +789,7 @@
                 ans.style.color = "#ffffff";
                 ans.innerText = "" + row.Answer;
                 modalContent.appendChild(ans);
+                
                 btn.remove();
             };
             modalContent.appendChild(btn);
