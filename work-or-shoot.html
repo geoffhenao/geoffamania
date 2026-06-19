@@ -13,17 +13,240 @@
 </script>
 
 <style>
-    /* Editable Board Title */
+    .column-headers {
+    display: grid;
+    /* Uses the exact same responsive column layout as your game grid */
+    grid-template-columns: repeat(7, min(11vw, 13vh));
+    gap: 1vh;
+    margin-bottom: 0.5vh; /* Small gap between numbers and the top row */
+    user-select: none;
+}
+
+.column-headers div {
+    font-family: monospace !important;
+    font-size: 2vh;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    text-shadow: 0 0 8px rgba(85, 153, 255, 0.4);
+}
+    .fact-check-trackers {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.fc-x {
+    font-size: 1.8vh;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease-in-out;
+    padding: 0 2px;
+    
+    /* Subdued Green Glow Configuration */
+    --glow-dim: rgba(0, 153, 0, 0.3);       /* Lowered alpha from 0.6 */
+    --glow-bright: rgba(0, 255, 0, 0.5);    /* Lowered alpha from 0.9 */
+    --glow-bg: rgba(0, 255, 0, 0);       /* Reduced background bleed */
+    animation: neonPulse 2s infinite ease-in-out;
+    color: #00cc00;                         /* Slightly deeper green text baseline */
+    text-shadow: 0 0 1px rgba(0, 255, 0, 0.2); /* Halved the blur radius and alpha intensity */
+}
+
+/* Off State: Dull Grayed-out Disabled state */
+.fc-x.disabled {
+    animation: none !important;
+    color: #444 !important;
+    text-shadow: none !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+    #clearBoardBtn {
+    margin-top: 2vh;
+    background: #222;
+    color: #990000;
+    border: 2px solid #990000;
+    padding: 1vh 2vw;
+    font-family: monospace !important;
+    font-size: 1.6vh;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+}
+
+#clearBoardBtn:hover {
+    background: #990000;
+    color: white;
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+}
+    /* Base setup to prepare the live text areas for a glow animation */
+.live-text.player-glow {
+    animation: neonPulse 2s infinite ease-in-out;
+    z-index: 5;
+}
+
+/* Player A (Blue Glow) matching your colorState 1 */
+.live-text.glow-player-a {
+    --glow-dim: #336699;
+    --glow-bright: #5599ff;
+    --glow-bg: rgba(51, 102, 153, 0.15);
+}
+
+/* Player B (Red Glow) matching your colorState 2 */
+.live-text.glow-player-b {
+    --glow-dim: #990000;
+    --glow-bright: #ff0000;
+    --glow-bg: rgba(255, 0, 0, 0.15);
+}
+    .arrow-container, .directional-arrow {
+    display: none !important;
+}
+body {
+    margin: 0;
+    background: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Locks app to the absolute viewport height */
+    font-family: monospace !important;
+    color: white;
+    overflow: hidden; /* Prevents stray scrollbars from appearing */
+}
+
+.game-container {
+    display: flex;
+    gap: 2vw; /* Fluid spacing between sidebar and grid */
+    align-items: center;
+    background: #111;
+    padding: 2vh 2vw;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    max-width: 98vw;
+    max-height: 98vh;
+    box-sizing: border-box;
+}
+
+/* Left Side Control & Info Panel - Scales fluidly with horizontal limits */
+.side-panel {
+    width: 18vw;
+    max-width: 260px;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
+}
+
+.info-box {
+    background: #222;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #336699;
+}
+
+.info-box2 {
+    padding: 0;
+}
+
+.info-box h2, .sponsor-box h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.8vh; /* Fluid heading size */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #336699;
+}
+
+/* Sponsored Box Cleaned */
+.sponsor-box {
+    background: transparent;
+    padding: 0;
+    border: none;
+}
+
+/* Live-editable text areas for streaming */
+.live-text {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid #222;
+    color: white;
+    padding: 6px;
+    text-transform: uppercase;
+    box-sizing: border-box;
+    font-size: 1.6vh;
+    resize: none;
+    border-radius: 4px;
+    font-family: monospace !important;
+}
+
+/* Side-by-side arrangement for scores */
+.score-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.name-field {
+    flex: 1;
+}
+
+.score-field {
+    width: 50px;
+    text-align: center;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+/* Scaled Responsive Upload Windows */
+.media-slot, .media-slot2 {
+    position: relative;
+    width: 100%;
+    height: 14vh; /* Scales dynamically based on screen height profile */
+    background: transparent;
+    border: 2px dashed #336699; 
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #336699;
+    cursor: pointer;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-size: 1.4vh;
+}
+
+.media-slot2 {
+    border: none; 
+}
+
+.media-slot img, .media-slot2 img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
+/* Right Side Grid Layout */
+.grid-wrap {
+    background: #000;
+    padding: 16px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 #boardTitle {
     width: 100%;
     background: transparent;
     border: none;
     color: #336699;
-    font-size: 40px;
+    font-size: 3.5vh;
     font-weight: bold;
     font-family: monospace !important;
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 1.5vh;
     outline: none;
     text-shadow: 0 0 10px rgba(85, 153, 255, 0.5);
     transition: background 0.2s;
@@ -33,61 +256,93 @@
     background: rgba(85, 153, 255, 0.1);
     border-radius: 6px;
 }
-    /* Timer Control Adjustments */
-#timerDisplay {
-    text-shadow: 0 0 10px rgba(85, 153, 255, 0.5);
-}
-button:hover {
-    background: #5599ff;
-    transition: background 0.2s;
-}
-input[type="number"]::-webkit-inner-spin-button {
-    opacity: 1;
+
+/* Perfectly calculated Connect Four Aspect Ratio Constraint */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, min(11vw, 13vh));
+    grid-template-rows: repeat(6, min(11vw, 13vh));
+    gap: 1vh;
 }
 
-/* Ensure font family uniformity for timer control buttons */
-.timer-controls button {
-    font-family: monospace !important;
-}
-  /* For Chrome, Safari, Edge, and Opera */
-#timerInput::-webkit-outer-spin-button,
-#timerInput::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* For Firefox */
-#timerInput[type="number"] {
-    -moz-appearance: textfield;
+.panel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: transparent; 
+    border: 2px solid #fff;
+    overflow: hidden;
+    box-sizing: border-box;
+    cursor: pointer;
 }
 
-    /* Container for the arrows, sits inside each panel */
-/* .arrow-container {
+.panel img {
     position: absolute;
-    inset: 4px;  Keeps them tucked inside the border 
-    pointer-events: none; /* Allows clicks to pass through to the panel
-    z-index: 5;
-} */
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    z-index: 1;
+}
 
-/* Base style for the small arrows */
+.overlay-text {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 20%; /* Keeps your lower placement footprint intact */
+    z-index: 2; /* Forces text to sit on top of the image */
+    background: rgba(17, 17, 17, 0.5); /* 50% opacity background */
+    border: none;
+    outline: none;
+    resize: none;
+    box-sizing: border-box;
+    font-size: 1.1vh; /* Tighter font for the lower height layout */
+    font-family: monospace !important; /* Forces monospace styling */
+    color: white;
+    text-transform: uppercase; /* Forces uppercase layout */
+    text-align: center;
+    padding: 0 4px;
+
+    /* --- THE UNFAILING CENTER TRICK FOR TEXTAREAS --- */
+    line-height: 2.2vh; /* Set this equal to or slightly around your box's calculated height */
+    display: block;
+}
+
+
+.label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace !important;
+    font-size: 1.4vh;
+    color: #666;
+    pointer-events: none;
+}
+
+/* Directional Arrow Setup */
 .directional-arrow {
     position: absolute;
-    font-size: 0px;
+    font-size: 1.5vh;  Responsive font scaling for layout arrows 
     font-weight: bold;
     color: #FFFFFF;
     cursor: pointer;
-    pointer-events: auto; /* Re-enables clicking on the arrow itself */
-    opacity: 0.3; /* Subtle by default */
+    pointer-events: auto;
+    opacity: 0.3;
     transition: opacity 0.2s, color 0.2s;
+    z-index: 6;
 }
 
-/* Active state */
 .directional-arrow.active {
     opacity: 1;
     color: #FF0000;
     text-shadow: 0 0 8px rgba(85, 153, 255, 0.8);
 }
-    @keyframes neonPulse {
+
+@keyframes neonPulse {
     0% {
         box-shadow: 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.6)), inset 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.4));
         border-color: var(--glow-dim, #336699);
@@ -107,201 +362,41 @@ input[type="number"]::-webkit-inner-spin-button {
     background: var(--glow-bg, rgba(51, 102, 153, 0.15)) !important;
     z-index: 5;
 }
-body {
+
+#timerDisplay {
+    text-shadow: 0 0 10px rgba(85, 153, 255, 0.5);
+}
+
+button:hover {
+    background: #5599ff;
+    transition: background 0.2s;
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+    opacity: 1;
+}
+
+.timer-controls button {
+    font-family: monospace !important;
+}
+
+#timerInput::-webkit-outer-spin-button,
+#timerInput::-webkit-inner-spin-button {
+    -webkit-appearance: none;
     margin: 0;
-    background: #000000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    font-family: Arial, sans-serif;
-    color: white;
-}
-.game-container {
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-    background: #111;
-    padding: 32px;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-}
-/* Left Side Control & Info Panel - Widened to 300px to accommodate larger assets */
-.side-panel {
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-.info-box {
-    background: #222;
-    padding: 16px;
-    border-radius: 6px;
-    border: 1px solid #336699;
 }
 
-/* Box surrounding Event Upload Box */
-.info-box2 {
-   /* background: #222; */
-    padding: 16px;
-    border-radius: 0px;
-   /* border: 5px solid #000000; */
-}
-.info-box h2 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #336699;
-}
-/* Sponsored Box Cleaned (No border/background) */
-.sponsor-box {
-    background: transparent;
-    padding: 0;
-    border: none;
-}
-.sponsor-box h2 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #336699;
-}
-/* Live-editable text areas for streaming */
-.live-text {
-    width: 100%;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid #222;
-    color: white;
-    padding: 8px;
-    box-sizing: border-box;
-    font-size: 16px;
-    resize: none;
-    border-radius: 4px;
-}
-/* Side-by-side arrangement for scores */
-.score-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-.name-field {
-    flex: 1;
-}
-.score-field {
-    width: 60px;
-    text-align: center;
-    font-weight: bold;
-    color: #FFFFFF;
-}
-/* Extra Image Upload Slot (Cleaned background & border for transparency) */
-.media-slot {
-    position: relative;
-    width: 100%;
-    height: 250px;
-    background: transparent;
-     border: 2px dashed #336699; 
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #336699;
-    cursor: pointer;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-/* "Event Logo Upload Space " */
-.media-slot2 {
-    position: relative;
-    width: 100%;
-    height: 250px;
-    background: transparent;
-   /* border: 2px dashed #336699; */
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #336699;
-    cursor: pointer;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-.media-slot img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: fill; /* Stretches graphic cleanly into the container constraints */
-    display: none;
+#timerInput[type="number"] {
+    -moz-appearance: textfield;
 }
 
-/* Right Side Grid Layout - Updated to 250px sizes */
-.grid-wrap {
-    background: #000;
-    padding: 24px;
-    border-radius: 6px;
-}
-.grid {
-    display: grid;
-    grid-template-columns: repeat(8, 250px);
-    grid-template-rows: repeat(4, 250px);
-    gap: 24px;
-}
-.panel {
-    position: relative;
-    width: 250px;
-    height: 250px;
-    background: transparent; /* Seamless transparent background for PNGs */
-    border: 4px solid #fff;
-    overflow: hidden;
-    box-sizing: border-box;
-    cursor: pointer;
-}
-.panel img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: none;
-    z-index: 1;
-}
-.overlay-text {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 48px;
-    z-index: 2;
-    background: rgba(128,128,128,0.75);
-    border: none;
-    outline: none;
-    resize: none;
-    padding: 10px;
-    box-sizing: border-box;
-    font-size: 18px;
-    font-family: Arial, sans-serif;
-    color: white;
-    text-align: center;
-    line-height: 1.2;
-}
-.label {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: Arial, sans-serif;
-    color: #666;
-    pointer-events: none;
-}
-/* Helper class to hide specific elements */
 .hidden {
     display: none !important;
 }
 </style>
 </head>
 <body>
+
 <div id="customAlert" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
     <div style="background: #222; border: 2px solid #336699; padding: 30px; border-radius: 8px; text-align: center; color: white; font-family: monospace; box-shadow: 0 0 20px rgba(85, 153, 255, 0.3);">
         <p style="font-size: 20px; margin-bottom: 20px;">You can't play here! The space below this has to be filled out</p>
@@ -313,67 +408,85 @@ body {
     <div class="side-panel">
 
         <div class="info-box2">
-    <h2 style="text-align: center;"></h2>
-    <div class="media-slot2" id="mediaSlot2">
-        <span id="mediaLabel2">Upload Logo</span> 
-        <img id="mediaImg2" src="" alt="Event Graphic" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; display: none;">
-        <input type="file" id="mediaInput2" accept="image/*" hidden>
-    </div>
-</div>
-
-<div class="info-box hidden">
-    <h2>Timer</h2>
-    <div id="timerDisplay" style="font-size: 40px; text-align: center; color: #5599ff; font-weight: bold; margin: 10px 0; font-family: monospace;">0</div>
-    <div class="timer-controls" style="display: flex; gap: 5px;">
-        <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center; font-size: 1rem; font-family: monospace;">
-        <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">START</button>
-        <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">STOP</button>
-    </div>
-</div>
-        <div class="info-box">
-            <h2 style="text-align: center;">Contestants</h2>
-            <div class="score-row">
-                <textarea class="live-text name-field" rows="1" placeholder="Player A"></textarea>
-                <textarea class="live-text score-field" rows="1" placeholder="0"></textarea>
-            </div>
-            <div class="score-row" style="margin-top: 10px;">
-                <textarea class="live-text name-field" rows="1" placeholder="Player B"></textarea>
-                <textarea class="live-text score-field" rows="1" placeholder="0"></textarea>
+            <div class="media-slot2" id="mediaSlot2">
+                <span id="mediaLabel2">UPLOAD LOGO</span> 
+                <img id="mediaImg2" src="" alt="Event Graphic" style="display: none;">
+                <input type="file" id="mediaInput2" accept="image/*" hidden>
             </div>
         </div>
+
+        <div class="info-box hidden">
+            <h2>Timer</h2>
+            <div id="timerDisplay" style="font-size: 40px; text-align: center; color: #5599ff; font-weight: bold; margin: 10px 0; font-family: monospace;">0</div>
+            <div class="timer-controls" style="display: flex; gap: 5px;">
+                <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center; font-size: 1rem; font-family: monospace;">
+                <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">START</button>
+                <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">STOP</button>
+            </div>
+        </div>
+
+<div class="info-box">
+    <h2 style="text-align: center;">Contestants</h2>
+    <div class="score-row">
+        <textarea class="live-text name-field player-glow glow-player-a" rows="1" placeholder="Player"></textarea>
+        <textarea class="live-text score-field player-glow glow-player-a" rows="1" placeholder="0"></textarea>
+                <div class="fact-check-trackers">
+            <span class="fc-x" onclick="toggleFC(this)">X</span>
+            <span class="fc-x" onclick="toggleFC(this)">X</span>
+            <span class="fc-x" onclick="toggleFC(this)">X</span>
+        </div>
+    </div>
+    <div class="score-row" style="margin-top: 10px;">
+        <textarea class="live-text name-field player-glow glow-player-b" rows="1" placeholder="Player"></textarea>
+        <textarea class="live-text score-field player-glow glow-player-b" rows="1" placeholder="0"></textarea>
+                <div class="fact-check-trackers">
+            <span class="fc-x" onclick="toggleFC(this)">X</span>
+            <span class="fc-x" onclick="toggleFC(this)">X</span>
+            <span class="fc-x" onclick="toggleFC(this)">X</span>
+        </div>
+    </div>
+</div>
 
         <div class="sponsor-box">
-            <h2 style="text-align: center;">Sponsored by...</h2>
+            <h2 style="text-align: center;">Sponsored by</h2>
             <div class="media-slot" id="mediaSlot">
-                <span id="mediaLabel">Upload Logo</span> 
-                <img id="mediaImg" src="" alt="Custom Graphic">
+                <span id="mediaLabel">UPLOAD LOGO</span> 
+                <img id="mediaImg" src="" alt="Custom Graphic" style="display: none;">
                 <input type="file" id="mediaInput" accept="image/*" hidden>
             </div>
-            
         </div>
     </div>
 
+    
 
     <div class="grid-wrap">
-        <input type="text" id="boardTitle" value="Work or Shoot" spellcheck="false" />
+        <h1 id="boardTitle">WORK OR SHOOT</h1>
+        <div class="column-headers">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+    </div>
         <div class="grid" id="grid"></div>
+        <button id="clearBoardBtn" onclick="clearFullBoard()">Clear Game Board</button>
     </div>
 </div>
 
 <script>
 const grid = document.getElementById("grid");
 
-// Configuration array for dynamic multi-color shifts
 const glowStates = [
-    { dim: "", bright: "", bg: "" },                                                // State 0: None
-    { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" },          // State 1: Blue (Original setup)
-    { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },             // State 2: Red
-    { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }              // State 3: Green
+    { dim: "", bright: "", bg: "" },                                                
+    { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" },          
+    { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },             
+    { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }              
 ];
 
-// Generate the 8x4 Grid Elements
-for(let i=0; i<32; i++){
-    // --- DIRECTIONAL ARROW GENERATOR ---
+// Generate the 7x6 Grid Elements (42 total spaces)
+for(let i=0; i<42; i++){
     const arrowContainer = document.createElement("div");
     arrowContainer.className = "arrow-container";
 
@@ -388,15 +501,16 @@ for(let i=0; i<32; i++){
         { name: 'br', sym: '↘', r:  1, c:  1, bottom: '2px', right: '2px' }
     ];
 
-    const currentRow = Math.floor(i / 3);
-    const currentCol = i % 3;
+    // Fixed math constraints for the updated 7-column layout
+    const currentRow = Math.floor(i / 7);
+    const currentCol = i % 7;
 
     directions.forEach(d => {
         const targetRow = currentRow + d.r;
         const targetCol = currentCol + d.c;
 
-        // Only create the arrow if the target space is on the board
-        if (targetRow >= 0 && targetRow <= 2 && targetCol >= 0 && targetCol <= 2) {
+        // Validating placement across all 6 rows (0-5) and 7 columns (0-6)
+        if (targetRow >= 0 && targetRow <= 5 && targetCol >= 0 && targetCol <= 6) {
             const arrow = document.createElement("div");
             arrow.className = "directional-arrow";
             arrow.innerText = d.sym;
@@ -418,18 +532,17 @@ for(let i=0; i<32; i++){
     const panel = document.createElement("div");
     panel.className = "panel";
 
-    // Per-panel localized variable to cleanly monitor layout color loops
     let colorState = 0;
 
     const label = document.createElement("div");
     label.className = "label";
-    label.innerText = "Add Image";
+    //label.innerText = "Add Image"; //
 
     const img = document.createElement("img");
 
     const text = document.createElement("textarea");
     text.className = "overlay-text";
-    text.placeholder = "Add text...";
+    // text.placeholder = "Add text...";//
 
     const input = document.createElement("input");
     input.type = "file";
@@ -443,7 +556,7 @@ for(let i=0; i<32; i++){
             img.src = e.target.result;
             img.style.display = "block";
             label.style.display = "none";
-            panel.dataset.filled = "true"; // <-- ADD THIS: Flags this panel as filled
+            panel.dataset.filled = "true";
         }
         reader.readAsDataURL(file);
     }
@@ -452,19 +565,16 @@ for(let i=0; i<32; i++){
     panel.addEventListener("drop", e => {
         e.preventDefault();
         
-        // --- CONNECT FOUR GRAVITY CHECK FOR DRAG-AND-DROP ---
-        const currentRow = Math.floor(i / 8); // 8 columns
+        const currentRow = Math.floor(i / 7); 
         
-        // If it's not the bottom row (Row 3), check the panel below it
-        if (currentRow < 3) {
-            const panelBelow = grid.children[i + 8];
-            // If the panel below exists and is NOT yet filled, block the drop
+        // Block drop if space below is row-valid and empty
+        if (currentRow < 5) {
+            const panelBelow = grid.children[i + 7];
             if (panelBelow && panelBelow.dataset.filled !== "true") {
-    showAlert(); // <-- Trigger custom modal
-    return;
-}
+                showAlert();
+                return;
+            }
         }
-        // ----------------------------------------------------
 
         load(e.dataTransfer.files[0]);
     });
@@ -474,7 +584,6 @@ for(let i=0; i<32; i++){
             e.preventDefault();
             e.stopPropagation(); 
             
-            // Loop functionality state indexing
             colorState = (colorState + 1) % 4;
             
             if (colorState === 0) {
@@ -492,19 +601,16 @@ for(let i=0; i<32; i++){
         }
 
         if(e.target === panel || e.target === label || e.target === img){
-            // --- CONNECT FOUR GRAVITY CHECK ---
-            const currentRow = Math.floor(i / 8); // Based on an 8-column layout
+            const currentRow = Math.floor(i / 7); 
             
-            // If it's not the bottom row (Row 3), check the panel below it
-            if (currentRow < 3) {
-                const panelBelow = grid.children[i + 8];
-                // If the panel below doesn't exist or isn't filled yet, block the play
+            // Connect Four gravity placement logic
+            if (currentRow < 5) {
+                const panelBelow = grid.children[i + 7];
                 if (!panelBelow || panelBelow.dataset.filled !== "true") {
-    showAlert(); // <-- Trigger custom modal
-    return; 
-}
+                    showAlert();
+                    return; 
+                }
             }
-            // ----------------------------------
 
             input.click();
         }
@@ -512,7 +618,6 @@ for(let i=0; i<32; i++){
 
     input.addEventListener("change", e => load(e.target.files[0]));
     
-    // Right-click anywhere on a grid panel to completely wipe it clear live
     panel.addEventListener("contextmenu", e => {
         e.preventDefault();
         img.src = "";
@@ -520,10 +625,9 @@ for(let i=0; i<32; i++){
         label.style.display = "flex";
         text.value = "";
         input.value = "";
-        panel.classList.remove("special-space"); // Clears the neon pulse effect
-        delete panel.dataset.filled; // <-- ADD THIS: Removes the filled flag
+        panel.classList.remove("special-space"); 
+        delete panel.dataset.filled; 
         
-        // Reset custom variable loops on dynamic panel wipeout
         colorState = 0;
         panel.style.removeProperty("--glow-dim");
         panel.style.removeProperty("--glow-bright");
@@ -534,7 +638,7 @@ for(let i=0; i<32; i++){
     grid.append(panel);
 }
 
-// Logic for the Side Panel Extra Image Upload
+// Sidebar Image Handling Logic
 const mediaSlot = document.getElementById("mediaSlot");
 const mediaInput = document.getElementById("mediaInput");
 const mediaImg = document.getElementById("mediaImg");
@@ -553,14 +657,11 @@ function loadSidebarFile(file) {
 
 mediaSlot.addEventListener("click", () => mediaInput.click());
 mediaInput.addEventListener("change", e => loadSidebarFile(e.target.files[0]));
-
 mediaSlot.addEventListener("dragover", e => e.preventDefault());
 mediaSlot.addEventListener("drop", e => {
     e.preventDefault();
     loadSidebarFile(e.dataTransfer.files[0]);
 });
-
-// Right-click the sidebar graphic window to instantly clear it live
 mediaSlot.addEventListener("contextmenu", e => {
     e.preventDefault();
     mediaImg.src = "";
@@ -599,33 +700,77 @@ mediaSlot2.addEventListener("contextmenu", e => {
     mediaLabel2.style.display = "block";
     mediaInput2.value = "";
 });
-        let countdown;
-        function startTimer() {
-            clearInterval(countdown);
-            let s = parseInt(document.getElementById("timerInput").value) || 30;
-            const display = document.getElementById("timerDisplay");
-            countdown = setInterval(() => {
-                s--;
-                display.innerText = s;
-                if(s === 12) document.getElementById("alarm-sound-countdown").play();
-                if(s <= 0) { clearInterval(countdown); document.getElementById("alarm-sound-end").play(); }
-            }, 1000);
-        }
 
-        function stopTimer() {
-            clearInterval(countdown);
-            document.getElementById("alarm-sound-countdown").pause();
-            document.getElementById("alarm-sound-end").pause();
-        }
-        function showAlert() {
+let countdown;
+function startTimer() {
+    clearInterval(countdown);
+    let s = parseInt(document.getElementById("timerInput").value) || 30;
+    const display = document.getElementById("timerDisplay");
+    countdown = setInterval(() => {
+        s--;
+        display.innerText = s;
+        if(s === 12) document.getElementById("alarm-sound-countdown").play();
+        if(s <= 0) { clearInterval(countdown); document.getElementById("alarm-sound-end").play(); }
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(countdown);
+    document.getElementById("alarm-sound-countdown").pause();
+    document.getElementById("alarm-sound-end").pause();
+}
+
+function showAlert() {
     document.getElementById('customAlert').style.display = 'flex';
 }
 
 function hideAlert() {
     document.getElementById('customAlert').style.display = 'none';
 }
+function clearFullBoard() {
+    // Confirm box to prevent accidental mid-match wipes
+    // if (!confirm("ARE YOU SURE YOU WANT TO CLEAR THE ENTIRE BOARD MATRIX?")) return; //
+
+    // Loop through every single generated panel block on the grid
+    Array.from(grid.children).forEach(panel => {
+        const img = panel.querySelector("img");
+        const label = panel.querySelector(".label");
+        const text = panel.querySelector("textarea");
+        const input = panel.querySelector("input[type='file']");
+
+        // 1. Wipe out images and reveal default prompt text labels
+        if (img) {
+            img.src = "";
+            img.style.display = "none";
+        }
+        if (label) {
+            label.style.display = "flex";
+        }
+        if (input) {
+            input.value = "";
+        }
+
+        // 2. Clear out any custom text overlays typed in
+        if (text) {
+            text.value = "";
+        }
+
+        // 3. Clear the Connect Four data tracker flag
+        delete panel.dataset.filled;
+
+        // 4. Strip out any active glow classes or variables
+        panel.classList.remove("special-space");
+        panel.style.removeProperty("--glow-dim");
+        panel.style.removeProperty("--glow-bright");
+        panel.style.removeProperty("--glow-bg");
+    });
+}
+// Toggle individual fact check X's between neon green and dark gray
+function toggleFC(element) {
+    element.classList.toggle("disabled");
+}
 </script>
-    <audio id="alarm-sound-countdown" src="https://geoffhenao.github.io/geoffamania/drowning-panic-theme.mp3"></audio>
-    <audio id="alarm-sound-end" src="https://geoffhenao.github.io/geoffamania/ring-loss.mp3"></audio>
+<audio id="alarm-sound-countdown" src="https://geoffhenao.github.io/geoffamania/drowning-panic-theme.mp3"></audio>
+<audio id="alarm-sound-end" src="https://geoffhenao.github.io/geoffamania/ring-loss.mp3"></audio>
 </body>
 </html>
