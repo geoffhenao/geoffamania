@@ -18,7 +18,7 @@
         @keyframes neonPulse {
             0% {
                 box-shadow: 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.6)), inset 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.4));
-                border-color: var(--glow-dim, #336699);
+                border-color: var(--glow-dim, #452266);
             }
             50% {
                 box-shadow: 0 0 20px var(--glow-bright, rgba(51, 102, 153, 0.9)), inset 0 0 15px var(--glow-bright, rgba(51, 102, 153, 0.6));
@@ -26,7 +26,7 @@
             }
             100% {
                 box-shadow: 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.6)), inset 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.4));
-                border-color: var(--glow-dim, #336699);
+                border-color: var(--glow-dim, #452266);
             }
         }
 
@@ -36,25 +36,12 @@
             z-index: 5;
         }
 
-        .special-space {
-            animation: neonPulse 2s infinite ease-in-out;
-            background: var(--glow-bg, rgba(51, 102, 153, 0.15)) !important;
-            z-index: 5;
-        }
-
-.special-space {
-    animation: neonPulse 2s infinite ease-in-out;
-    background: var(--glow-bg, rgba(51, 102, 153, 0.15)) !important;
-    z-index: 5;
-}
-        /* Force padding and borders to calculate inside widths */
         * {
             box-sizing: border-box;
         }
 
-        /* Timer Control Adjustments */
         #timerDisplay {
-            text-shadow: 0 0 10px rgba(85, 153, 255, 0.5);
+            text-shadow: 0 0 10px rgba(87, 41, 129, 0.5);
         }
         button:hover {
             background: #5599ff;
@@ -66,7 +53,7 @@
 
         :root {
             --blue-jeopardy: #222;
-            --yellow-jeopardy: #336699;
+            --yellow-jeopardy: #452266;
             --panel-bg: #222;
         }
 
@@ -82,11 +69,10 @@
             min-height: 100vh;
         }
 
-        /* Editable Main Title Styling */
         .main-title-input {
             background: transparent;
             border: none;
-            color: #336699;
+            color: #452266;
             font-family: monospace;
             font-size: 2.5rem;
             text-align: center;
@@ -99,36 +85,32 @@
             font-weight: bold;
         }
 
-        /* Game Layout */
         .game-container {
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: flex-start;
             width: 100%;
-            max-width: 1450px; /* Slightly increased to fit wider board layout safely */
-            gap: 30px; /* Increased separation between side panels and board */
+            max-width: 1450px;
+            gap: 30px;
         }
 
-        /* Side Wrapper for Player Content */
         .player-side {
             display: flex;
             flex-direction: column;
             gap: 0px;
-            flex-shrink: 0; /* Keeps side panels from compressing the board space */
+            flex-shrink: 0;
         }
 
-        /* Center Layout Wrapper to Stack Board and Timer cleanly */
         .center-column {
             display: flex;
             flex-direction: column;
             flex: 1;
-            max-width: 850px; /* Explicit maximum bounds for board space */
+            max-width: 850px;
             gap: 20px;
             min-width: 0; 
         }
 
-        /* Score Tracker Panels */
         .player-panel {
             background-color: var(--panel-bg);
             border: 3px solid var(--blue-jeopardy);
@@ -154,170 +136,53 @@
             text-transform: uppercase;
             font-weight: bold;
         }
-        
-        .player-name:focus {
-            outline: 1px solid #336699;
+
+        .wager-input::-webkit-outer-spin-button,
+        .wager-input::-webkit-inner-spin-button,
+        #timerInput::-webkit-outer-spin-button,
+        #timerInput::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
-        .score-display {
-            font-size: 3.5rem;
-            color: #336699;
-            text-shadow: 2px 2px 0px #000;
-            margin-bottom: 20px;
-            font-weight: bold;
+        .wager-input[type="number"],
+        #timerInput[type="number"] {
+            -moz-appearance: textfield;
         }
 
-        .wager-input {
-            width: 80%;
-            padding: 10px;
-            font-size: 1.2rem;
-            text-align: center;
-            font-family: monospace;
-            margin-bottom: 15px;
-            background: #333;
-            color: white;
-            border: 2px solid #555;
-            border-radius: 4px;
-        }
-
-        .wager-input:focus {
-            outline: none;
-            border-color: #336699;
-        }
-/* For Chrome, Safari, Edge, and Opera */
-.wager-input::-webkit-outer-spin-button,
-.wager-input::-webkit-inner-spin-button,
-#timerInput::-webkit-outer-spin-button,
-#timerInput::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* For Firefox */
-.wager-input[type="number"],
-#timerInput[type="number"] {
-    -moz-appearance: textfield;
-}
-
-        .btn-group {
-            display: flex;
-            gap: 5px;
-            width: 100%;
-        }
-
-        .score-btn {
-            flex: 1;
-            padding: 10px 5px;
-            font-family: monospace;
-            font-size: 1rem;
-            cursor: pointer;
+        .close-btn {
+            background: var(--yellow-jeopardy);
+            color: black;
             border: none;
-            border-radius: 4px;
-            text-transform: uppercase;
-            transition: opacity 0.2s;
-            font-weight: bold;
-        }
-
-        .score-btn:hover {
-            opacity: 0.8;
-        }
-
-        .btn-add { background-color: #336699; color: white; }
-        .btn-sub { background-color: #ff0000; color: white; }
-        
-        .btn-skip {
-            background-color: #555;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            transition: opacity 0.4s ease, background-color 0.2s;
-        }
-        .btn-skip:hover {
-            background-color: #777;
-        }
-        .btn-skip svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-        }
-
-        /* Generic Modifier Panel Layout (Bonus & Curse) */
-        .modifier-panel {
-            background-color: var(--panel-bg);
-            border: 3px solid var(--blue-jeopardy);
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 250px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            margin-top: 15px;
-            cursor: pointer;
-            transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.1s ease;
-        }
-        
-        .modifier-panel:active {
-            transform: scale(0.98);
-        }
-
-        /* Binterman Blue Glow effect when active */
-        .modifier-panel.bonus-active {
-            border-color: #5599ff;
-            box-shadow: 0 0 25px rgba(85, 153, 255, 0.8), 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        /* Ngiam Red Glow effect when active */
-        .modifier-panel.curse-active {
-            border-color: #ff3333;
-            box-shadow: 0 0 25px rgba(255, 51, 51, 0.8), 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        /* Editable Modifier Title Input */
-        .modifier-title-input {
-            background: transparent;
-            border: none;
-            color: white;
+            padding: 10px 25px;
             font-family: monospace;
             font-size: 1.2rem;
-            text-align: center;
-            margin-bottom: 12px;
-            width: 100%;
+            cursor: pointer;
             text-transform: uppercase;
             font-weight: bold;
-            letter-spacing: 1px;
+            margin: 5px;
         }
 
-        .modifier-image {
-            width: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 2px solid #333;
-            background: #111;
-            pointer-events: none;
+        .close-btn:hover {
+            background: white;
         }
 
-        /* Scroll container for responsive board protection */
         .board-scroll-wrapper {
             width: 100%;
             overflow-x: auto;
-            overflow-y: hidden; /* Hard locks unwanted height glitches */
+            overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
-            padding: 10px 0; /* Vertical breathing room */
+            padding: 10px 0;
         }
 
-        /* Board Styles */
         .board {
             display: grid;
-            grid-template-columns: repeat(6, 1fr); /* This is where grid layout can be changed */
+            grid-template-columns: repeat(6, 1fr);
             gap: 16px;
-            width: calc(100% - 20px); /* Factors calculation buffer around structural dimensions */
+            width: calc(100% - 20px);
             margin: 0 auto;
             min-width: 620px;
-            padding: 12px; /* Generous glow safe-zone spacing buffer */
+            padding: 12px;
         }
 
         .category-header {
@@ -357,9 +222,9 @@
         }
 
         .cell:hover {
-            transform: scale(1.04); /* Adjusted slightly for crisp hover visibility */
+            transform: scale(1.04);
             border-color: #ffffff;
-            z-index: 5; /* Ensures edge cells break visual stacking cleanly without triggering boxes */
+            z-index: 5;
         }
 
         .cell.disabled {
@@ -367,17 +232,6 @@
             border-color: #444;
             cursor: not-allowed;
             box-shadow: none;
-        }
-
-        .cell.disabled:hover {
-            transform: none;
-            border-color: #444;
-        }
-
-        .cell.disabled input {
-            color: #555;
-            cursor: not-allowed;
-            text-shadow: none;
         }
 
         .cell input {
@@ -397,17 +251,16 @@
             font-weight: bold;
         }
 
-        /* Widget Box for the Timer */
         .info-box {
             background: #222;
             padding: 20px;
             border-radius: 6px;
-            border: 1px solid #336699;
+            border: 1px solid #452266;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: calc(100% - 24px); /* Perfectly alignments with the inner boundaries of your grid padding layout */
+            width: calc(100% - 24px);
             margin: 0 auto;
         }
 
@@ -416,15 +269,77 @@
             font-size: 18px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #336699;
+            color: #452266;
         }
 
-        .timer-controls input,
-        .timer-controls button {
+        /* WHEEL STRUCTURE INSIDE MODAL CONTEXT */
+        .wheel-outer-wrapper {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 15px auto;
+            border: 5px solid #452266;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            background: #111;
+        }
+
+        .wheel-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.1, 0.8, 0.25, 1);
+        }
+
+        .wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 25px solid #ff3333;
+            z-index: 10;
+            filter: drop-shadow(-2px 2px 2px rgba(0,0,0,0.5));
+        }
+
+        .spin-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 65px;
+            height: 65px;
+            background: #452266;
+            color: white;
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
             font-family: monospace;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 11;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .spin-btn:hover {
+            background: #5599ff;
         }
 
-        /* Modal Popup styles */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -455,40 +370,12 @@
             text-shadow: 2px 2px 0px #000;
         }
 
-        .close-btn {
-            background: var(--yellow-jeopardy);
-            color: black;
-            border: none;
-            padding: 10px 25px;
-            font-family: monospace;
-            font-size: 1.2rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin: 5px;
-        }
-
-        .close-btn:hover {
-            background: white;
-        }
-
-        #header-container img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* ========================================== */
-        /* RESPONSIVE MEDIA QUERIES          */
-        /* ========================================== */
-        
-        /* Tablets (iPad) and smaller laptops */
         @media (max-width: 1200px) {
             .game-container {
                 flex-direction: column;
                 align-items: center;
                 gap: 25px;
             }
-
             .player-side {
                 flex-direction: row;
                 justify-content: center;
@@ -496,73 +383,14 @@
                 width: 100%;
                 gap: 15px;
             }
-
-            .modifier-panel {
-                margin-top: 0;
-                width: 220px;
-                padding: 10px;
-            }
-            
             .player-panel {
                 width: 220px;
                 height: 255px;
                 padding: 15px;
             }
-
-            .score-display {
-                font-size: 2.8rem;
-                margin-bottom: 10px;
-            }
-
             .center-column {
                 width: 100%;
                 max-width: 900px;
-            }
-        }
-
-        /* Mobile phones */
-        @media (max-width: 680px) {
-            body {
-                padding: 10px;
-            }
-
-            .main-title-input {
-                font-size: 1.8rem;
-                margin-bottom: 10px;
-            }
-
-            .player-side {
-                flex-direction: column;
-                align-items: center;
-                width: 100%;
-                gap: 10px;
-            }
-
-            .player-panel, .modifier-panel {
-                width: 100%;
-                max-width: 300px;
-            }
-
-            .modifier-panel {
-                display: grid;
-                grid-template-columns: 1fr 60px;
-                gap: 10px;
-                align-items: center;
-                text-align: left;
-            }
-
-            .modifier-title-input {
-                margin-bottom: 0;
-                text-align: left;
-                font-size: 1rem;
-            }
-
-            .modal-content {
-                padding: 20px;
-            }
-
-            .modal-question {
-                font-size: 1.5rem;
             }
         }
     </style>
@@ -571,16 +399,13 @@
 
     <div class="main-title-input">WAR GAMES!</div>
     <button class="close-btn" onclick="openRules()">View Rules</button>
-<br>
+    <br>
     <div class="game-container">
         
         <div class="player-side">
             <div class="player-panel">
                 <input type="text" class="player-name" value="PLAYER 1">
-                
             </div>
-
-
         </div>
 
         <div class="center-column">
@@ -590,12 +415,13 @@
 
             <div class="info-box">
                 <h2>Timer</h2>
-                <div id="timerDisplay" style="font-size: 40px; text-align: center; color: #5599ff; font-weight: bold; margin: 10px 0; font-family: monospace;">0</div>
-                <div class="timer-controls" style="display: flex; gap: 5px;">
-                    <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center; font-size: 1rem;">
-                    <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">START</button>
-                    <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">STOP</button>
+                <div id="timerDisplay" style="font-size: 40px; text-align: center; color: #452266; font-weight: bold; margin: 10px 0; font-family: monospace;">30</div>
+                <div class="timer-controls" style="display: flex; gap: 5px; margin-bottom: 10px;">
+                    <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #452266; width: 60px; padding: 5px; text-align: center; font-size: 1rem;">
+                    <button onclick="startTimer()" style="background: #452266; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">START</button>
+                    <button onclick="stopTimer()" style="background: #452266; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">STOP</button>
                 </div>
+                <button class="close-btn" onclick="openWheelModal()" style="margin: 5px 0 0 0; width: 235px;">HAWK'S NEST</button>
             </div>
         </div>
         
@@ -603,10 +429,23 @@
             <div class="player-panel">
                 <input type="text" class="player-name" value="PLAYER 2">
             </div>
-
-
         </div>
 
+    </div>
+
+    <div class="modal-overlay" id="wheel-modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <h2 style="color: #452266; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0px;">Punishment Wheel</h2>
+            <div class="wheel-outer-wrapper" id="wheel-frame">
+                <div class="wheel-pointer"></div>
+                <button class="spin-btn" onclick="spinWheel()">SPIN</button>
+                <div class="wheel-container" id="wheel-container">
+                    <canvas id="wheelCanvas" class="wheel-canvas" width="320" height="320"></canvas>
+                </div>
+            </div>
+            <div id="wheelWinnerDisplay" style="font-size: 1.4rem; color: #5599ff; font-weight: bold; min-height: 25px; margin: 10px 0; text-align: center; text-transform: uppercase;"></div>
+            <button class="close-btn" onclick="closeWheelModal()">Close Nest</button>
+        </div>
     </div>
 
     <div class="modal-overlay" id="modal">
@@ -620,27 +459,25 @@
         <div class="modal-content">
             <button class="close-btn" onclick="closeRules()">Close Rules</button>
             <div id="rules-text" style="margin-top: 30px; text-align: left; line-height: 1.6; font-size: 1.2rem;">
-                <h3 style="text-align: center;">How to Play Geo(ff)pardy:</h3>
-                <p style="font-size: 15px;">Players start with 750 points and must wager points to answer a question. If they get it right, they will be rewarded with the points they wagered. If they get it wrong, they lose the wagered points. There are four categories, three difficulties per category, and minimum and maximum wagers for each difficulty:</p>
-                <p style="font-size: 15px; font-weight: bold; text-align: center;">Easy (100/300) | Medium (200/400) | Hard (300/500)</p>
-                <p style="font-size: 15px;">If a player has fewer points than the minimum, they have to wager their entire total amount to continue. The game will go on until all questions are cleared OR a player has been eliminated.</p>
-                <p style="font-size: 15px;"><strong>1 Skip Per Player</strong> - Each player is allowed one skip; however, while you keep your bet when you skip, it opens the question up for the other player to answer. If they get it right, they will get half the minimum points for that question. Example: The player skips a Hard (300) question; if their opponent answers it correctly, they will get 150.</p>
-                <p style="font-size: 15px;"><strong>1 Not Geoff in a Mask (NGIAM) Curse</strong> - NGIAM returns to ruin someone’s night. The player loses their turn (but keeps their points); however, they only get half the points they wager on their next turn. Example: Player bets 300 on a Medium question, they will only get 150 if correct; if they get it wrong, they lose the full 300.</p>
-                <p style="font-size: 15px;"><strong>1 Binterman Bonus</strong> - The player can either take the points OR forego the points and gain the Binterman Bonus upon a right answer. For one future wrong answer, they can choose to use the Binterman Bonus and halve the amount of points lost. This must be declared at the start of your move. Example: The player uses a Binterman Bonus, wagered 500, and got the question wrong - they will instead only lose 250. A Binterman Bonus can not be used while a NGIAM Curse is active.</p>
+                <h3 style="text-align: center;">How to Play War Games!:</h3>
+                <p style='text-align:center;'>Loading rules...</p>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. DATA STATE
         let allGameData = [];
+        let wheelOptions = [];
         let scores = { p1: 750, p2: 750 };
         let activeCell = null;
+        let isSpinning = false;
+        
+        let flashingSliceIndex = null;
+        let flashingColorOverride = null;
+        let flashInterval = null;
 
-        // Map for Point Values (100/300 etc)
         const pointMap = { "Easy": "EASY", "Medium": "MEDIUM", "Hard": "HARD", "Expert": "EXPERT", "Insane": "INSANE", "Unfair": "UNFAIR" };
 
-        // 2. LOAD DATA FROM GOOGLE SHEET
         function loadGameData() {
             const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQcgdm3vath-Yr1B4IviKgBleFY4ctEPT3as0tr2uWjXkknrxXjEzJU8KRR4J4IQ6QHUyDiVj1MqfnM/pub?gid=0&single=true&output=csv";
             
@@ -649,19 +486,137 @@
                 header: true,
                 complete: function(results) {
                     allGameData = results.data;
+                    wheelOptions = allGameData.map(r => r.WheelOption).filter(o => o && o.trim() !== "").slice(0, 10);
+                    
+                    while(wheelOptions.length < 10) {
+                        wheelOptions.push(`Option ${wheelOptions.length + 1}`);
+                    }
+                    
                     initBoard(); 
+                    drawWheel();
                 }
             });
         }
 
-        // 3. BUILD THE BOARD
+        function drawWheel() {
+            const canvas = document.getElementById("wheelCanvas");
+            const ctx = canvas.getContext("2d");
+            const numSlices = 10;
+            const arc = (2 * Math.PI) / numSlices;
+            const defaultColors = ["#222222", "#452266", "#1a1a1a", "#4477aa", "#2d2d2d", "#222222", "#452266", "#1a1a1a", "#4477aa", "#2d2d2d"];
+
+            ctx.clearRect(0, 0, 320, 320);
+            
+            for (let i = 0; i < numSlices; i++) {
+                const angle = i * arc;
+                
+                if (i === flashingSliceIndex && flashingColorOverride) {
+                    ctx.fillStyle = flashingColorOverride;
+                } else {
+                    ctx.fillStyle = defaultColors[i % defaultColors.length];
+                }
+                
+                ctx.beginPath();
+                ctx.moveTo(160, 160);
+                ctx.arc(160, 160, 155, angle, angle + arc);
+                ctx.lineTo(160, 160);
+                ctx.fill();
+                
+                if (i === flashingSliceIndex && flashingColorOverride) {
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 4;
+                } else {
+                    ctx.strokeStyle = "#555555";
+                    ctx.lineWidth = 2;
+                }
+                ctx.stroke();
+
+                ctx.save();
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 11px monospace";
+                ctx.translate(160, 160);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = "right";
+                
+                let txt = wheelOptions[i] || "";
+                if(txt.length > 15) txt = txt.substring(0, 13) + "..";
+                ctx.fillText(txt, 145, 4);
+                ctx.restore();
+            }
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            clearInterval(flashInterval);
+            flashingSliceIndex = null;
+            flashingColorOverride = null;
+            document.getElementById("wheelWinnerDisplay").innerText = "";
+            drawWheel();
+
+            const numSlices = 10;
+            const arc = 360 / numSlices;
+            const winningIndex = Math.floor(Math.random() * numSlices);
+            
+            const targetAngle = (360 - (winningIndex * arc) - (arc / 2)) % 360;
+            const finalRotation = 1800 + targetAngle; 
+
+            const container = document.getElementById("wheel-container");
+            container.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.25, 1)";
+            container.style.transform = `rotate(${finalRotation}deg)`;
+
+            setTimeout(() => {
+                isSpinning = false;
+                document.getElementById("wheelWinnerDisplay").innerText = "WINNER: " + wheelOptions[winningIndex];
+                
+                triggerIsolatedSliceGlow(winningIndex);
+                
+                container.style.transition = "none";
+                container.style.transform = `rotate(${targetAngle}deg)`;
+            }, 4000);
+        }
+
+        function triggerIsolatedSliceGlow(sliceIndex) {
+            flashingSliceIndex = sliceIndex;
+            const glowSequence = ["#452266", "#990000", "#009900", "#452266", "#990000", "#009900"];
+            let step = 0;
+
+            flashingColorOverride = glowSequence[step];
+            drawWheel();
+            step++;
+
+            flashInterval = setInterval(() => {
+                if (step < glowSequence.length) {
+                    flashingColorOverride = glowSequence[step];
+                    drawWheel();
+                    step++;
+                } else {
+                    clearInterval(flashInterval);
+                    flashingSliceIndex = null;
+                    flashingColorOverride = null;
+                    drawWheel();
+                }
+            }, 600);
+        }
+
+        /* MODAL CONTROL TOGGLES */
+        function openWheelModal() {
+            document.getElementById("wheel-modal").style.display = "flex";
+            // Forces canvas layout adjustment check during live render initialization
+            drawWheel(); 
+        }
+
+        function closeWheelModal() {
+            if (isSpinning) return; // Prevent raw visual state breakage if closed early
+            document.getElementById("wheel-modal").style.display = "none";
+        }
+
         function initBoard() {
             const board = document.getElementById('game-board');
             board.innerHTML = ""; 
-            
             const categories = [...new Set(allGameData.map(r => r.Category))].filter(c => c);
 
-            // Build Headers
             categories.forEach(cat => {
                 const header = document.createElement('div');
                 header.className = 'category-header';
@@ -669,35 +624,28 @@
                 board.appendChild(header);
             });
 
-            // Configuration array for dynamic multi-color shifts
             const glowStates = [
-                { dim: "", bright: "", bg: "" },                                                // State 0: None
-                { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" },          // State 1: Blue
-                { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },             // State 2: Red
-                { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }              // State 3: Green
+                { dim: "", bright: "", bg: "" },
+                { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" },
+                { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },
+                { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }
             ];
 
-            // Build Cells (Add new 'difficulties' to increase grid size, e.g. adding Expert, Insane, and Unfair increases from 4x4 to 6x6)
             ["Easy", "Medium", "Hard", "Expert", "Insane", "Unfair"].forEach(diff => {
                 categories.forEach(cat => {
                     const row = allGameData.find(r => r.Category === cat && r.Difficulty === diff);
                     const cell = document.createElement('div');
                     cell.className = 'cell';
                     
-                    // Track color state locally for this specific cell
                     let colorState = 0;
-
                     const input = document.createElement('input');
                     input.type = 'text';
                     input.value = pointMap[diff] || diff; 
                     input.style.pointerEvents = "none";
                     
-                    // Left Click: Launch Question OR Cycle Colors if Shift is held
                     cell.onclick = (e) => {
                         if (e.shiftKey) {
                             e.preventDefault();
-                            
-                            // Cycle through states 0 to 3
                             colorState = (colorState + 1) % 4;
                             
                             if (colorState === 0) {
@@ -711,25 +659,21 @@
                                 cell.style.setProperty("--glow-bright", glowStates[colorState].bright);
                                 cell.style.setProperty("--glow-bg", glowStates[colorState].bg);
                             }
-                            return; // Stop execution here so the modal doesn't open!
+                            return;
                         }
 
                         if (cell.classList.contains('disabled')) return;
                         launchQuestion(row, cell);
                     };
 
-                    // Right Click: Reset
                     cell.oncontextmenu = (e) => {
                         e.preventDefault();
                         cell.classList.remove('disabled');
-                        cell.classList.remove("special-space"); // Clear glow on reset
-                        
-                        // Reset color tracking
+                        cell.classList.remove("special-space");
                         colorState = 0;
                         cell.style.removeProperty("--glow-dim");
                         cell.style.removeProperty("--glow-bright");
                         cell.style.removeProperty("--glow-bg");
-                        
                         input.disabled = false;
                     };
                     
@@ -739,19 +683,15 @@
             });
         }
 
-        // 4. QUESTION LOGIC
         function launchQuestion(row, cellElement) {
             if (!row) return;
             const modal = document.getElementById('modal');
             const textDisplay = document.getElementById('modal-text');
             const modalContent = document.querySelector('.modal-content');
             
-            // Clean up old elements
             document.querySelectorAll('.dynamic-content').forEach(el => el.remove());
-
             textDisplay.innerText = row.Question;
             
-            // Handle Image
             if (row.ImageURL && row.ImageURL.trim() !== "") {
                 const img = document.createElement('img');
                 img.src = row.ImageURL;
@@ -762,15 +702,13 @@
                 modalContent.appendChild(img);
             }
 
-            // Reveal Answer Button
             const btn = document.createElement('button');
             btn.innerText = "Reveal Answer";
             btn.className = "close-btn dynamic-content";
             btn.style.marginTop = "20px";
             btn.onclick = () => {
-                stopTimer(); // <-- Safely stops countdown and SFX when answer is revealed
+                stopTimer();
                 
-                // 1. Handle Second Image Column (ImageURL2) AFTER clicking reveal
                 if (row.ImageURL2 && row.ImageURL2.trim() !== "") {
                     const img2 = document.createElement('img');
                     img2.src = row.ImageURL2;
@@ -781,7 +719,6 @@
                     modalContent.appendChild(img2);
                 }
 
-                // 2. Display the Answer Text
                 const ans = document.createElement('div');
                 ans.className = 'dynamic-content';
                 ans.style.marginTop = "15px";
@@ -789,51 +726,32 @@
                 ans.style.color = "#ffffff";
                 ans.innerText = "" + row.Answer;
                 modalContent.appendChild(ans);
-                
                 btn.remove();
             };
             modalContent.appendChild(btn);
 
             modal.style.display = 'flex';
             activeCell = cellElement;
-
-            startTimer(); // <-- Safely triggers countdown as soon as the window opens
+            startTimer();
         }
 
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
-            stopTimer(); // <-- Safety net to stop timer if window is closed early
+            stopTimer();
             if (activeCell) {
                 activeCell.classList.add('disabled');
                 activeCell = null;
             }
         }
 
-        // 5. SCORE/TIMER (Preserved)
-        function updateScore(p, add) {
-            const w = parseInt(document.getElementById(`wager-${p}`).value) || 0;
-            const b = document.getElementById(`bonus-panel-${p}`).classList.contains('bonus-active');
-            const c = document.getElementById(`curse-panel-${p}`).classList.contains('curse-active');
-            if(add) scores[p] += c ? Math.round(w/2) : w;
-            else scores[p] -= b ? Math.round(w/2) : w;
-            document.getElementById(`score-${p}`).innerText = scores[p];
-            document.getElementById(`wager-${p}`).value = '';
-        }
-
         let countdown;
         function startTimer() {
-            // Force audio tracks to 50% volume right as the timer initializes
-            document.getElementById("alarm-sound-countdown").volume = 0.5;
-            document.getElementById("alarm-sound-end").volume = 0.5;
-
             clearInterval(countdown);
             let s = parseInt(document.getElementById("timerInput").value) || 30;
             const display = document.getElementById("timerDisplay");
             countdown = setInterval(() => {
                 s--;
                 display.innerText = s;
-                if(s === 12) document.getElementById("alarm-sound-countdown").play();
-                if(s <= 0) { clearInterval(countdown); document.getElementById("alarm-sound-end").play(); }
             }, 1000);
         }
 
@@ -843,34 +761,23 @@
             document.getElementById("alarm-sound-end").pause();
         }
 
-        function toggleBonusGlow(el) { el.classList.toggle('bonus-active'); }
-        function toggleCurseGlow(el) { el.classList.toggle('curse-active'); }
-
         loadGameData();
         
         function openRules() {
-            // Paste your new URL from the Rules tab GID:
             const rulesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQcgdm3vath-Yr1B4IviKgBleFY4ctEPT3as0tr2uWjXkknrxXjEzJU8KRR4J4IQ6QHUyDiVj1MqfnM/pub?gid=1440005840&single=true&output=csv";
-            
             const rulesContainer = document.getElementById('rules-text');
             
-            // Only fetch if the container still holds the old hardcoded text
-            if (rulesContainer.innerText.includes("Players start with 750 points")) {
-                rulesContainer.innerHTML = "<p style='text-align:center;'>Loading rules...</p>";
-                
+            if (rulesContainer.innerText.includes("Loading rules...")) {
                 Papa.parse(rulesUrl, {
                     download: true,
                     header: true,
                     complete: function(results) {
                         let html = `<h3 style="text-align: center;">How to Play War Games!:</h3>`;
-                        
                         results.data.forEach(row => {
-                            // Grabs the text from your 'RuleText' column row by row
                             if (row.RuleText && row.RuleText.trim() !== "") {
                                 html += `<p style="font-size: 15px; margin-bottom: 12px;">${row.RuleText}</p>`;
                             }
                         });
-                        
                         rulesContainer.innerHTML = html;
                     },
                     error: function(err) {
@@ -878,30 +785,26 @@
                     }
                 });
             }
-            
             document.getElementById('rules-modal').style.display = 'flex';
         }
 
         function closeRules() {
             document.getElementById('rules-modal').style.display = 'none';
         }
-                // PLAYER PANEL COLOR CYCLING
+
         document.querySelectorAll('.player-panel').forEach(panel => {
             let colorState = 0;
             const glowStates = [
-                { dim: "", bright: "", bg: "" },                                       // State 0: Default
-                { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" }, // State 1: Blue
-                { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },    // State 2: Red
-                { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }     // State 3: Green
+                { dim: "", bright: "", bg: "" },
+                { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" },
+                { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },
+                { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }
             ];
 
             panel.addEventListener('click', function(e) {
-                // Check if the Shift key is held during the click
                 if (e.shiftKey) {
                     e.preventDefault();
-                    
-                    colorState = (colorState + 1) % 4; // Cycle 0 -> 1 -> 2 -> 3 -> 0
-                    
+                    colorState = (colorState + 1) % 4;
                     if (colorState === 0) {
                         panel.classList.remove("special-space");
                         panel.style.removeProperty("--glow-dim");
@@ -916,7 +819,6 @@
                 }
             });
 
-            // Right-click shortcut to quickly clear a panel's color back to default
             panel.addEventListener('contextmenu', function(e) {
                 if (panel.classList.contains('special-space')) {
                     e.preventDefault();
