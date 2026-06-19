@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAR GAMES!</title>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YCZ6PXJ3B"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-7VTBFP1ZC2');
+    </script>
+
+    <style>
+        @keyframes neonPulse {
+            0% {
+                box-shadow: 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.6)), inset 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.4));
+                border-color: var(--glow-dim, #452266);
+            }
+            50% {
+                box-shadow: 0 0 20px var(--glow-bright, rgba(51, 102, 153, 0.9)), inset 0 0 15px var(--glow-bright, rgba(51, 102, 153, 0.6));
+                border-color: var(--glow-bright, #5599ff);
+            }
+            100% {
+                box-shadow: 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.6)), inset 0 0 8px var(--glow-dim, rgba(51, 102, 153, 0.4));
+                border-color: var(--glow-dim, #452266);
+            }
+        }
+
+        .special-space {
+            animation: neonPulse 2s infinite ease-in-out;
+            background: var(--glow-bg, rgba(51, 102, 153, 0.15)) !important;
+            z-index: 5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        #timerDisplay {
+            text-shadow: 0 0 10px rgba(87, 41, 129, 0.5);
+        }
+        button:hover {
+            background: #5599ff;
+            transition: background 0.2s;
+        }
+        input[type="number"]::-webkit-inner-spin-button {
+            opacity: 1;
+        }
+
+        :root {
+            --blue-jeopardy: #222;
+            --yellow-jeopardy: #452266;
+            --panel-bg: #222;
+        }
+
+        body {
+            font-family: monospace;
+            background-color: #111;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .main-title-input {
+            background: transparent;
+            border: none;
+            color: #452266;
+            font-family: monospace;
+            font-size: 2.2rem;
+            text-align: center;
+            text-shadow: 2px 2px 0px #000;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 600px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 1550px;
+            gap: 20px;
+        }
+
+        .player-side {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-shrink: 0;
+            width: 280px;
+            align-items: center;
+        }
+
+        .center-column {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            max-width: 950px;
+            gap: 20px;
+            min-width: 0; 
+        }
+
+        .player-panel {
+            background-color: var(--panel-bg);
+            border: 3px solid var(--blue-jeopardy);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .player-name {
+            background: transparent;
+            border: none;
+            color: white;
+            font-family: monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 0px;
+            width: 100%;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .wager-input::-webkit-outer-spin-button,
+        .wager-input::-webkit-inner-spin-button,
+        #timerInput::-webkit-outer-spin-button,
+        #timerInput::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .wager-input[type="number"],
+        #timerInput[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .close-btn {
+            background: var(--yellow-jeopardy);
+            color: black;
+            border: none;
+            padding: 8px 20px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .close-btn:hover {
+            background: white;
+        }
+
+        .board-scroll-wrapper {
+            width: 100%;
+            padding: 0;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0px;
+        }
+
+        .category-header {
+            background-color: var(--blue-jeopardy);
+            border: 3px solid white;
+            padding: 5px;
+            min-height: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .category-editable {
+            width: 100%;
+            color: white;
+            font-family: monospace;
+            font-size: 1rem;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: bold;
+            line-height: 1.2;
+            word-wrap: break-word;
+            outline: none;
+        }
+
+        .cell {
+            background-color: var(--blue-jeopardy);
+            border: 3px solid white;
+            aspect-ratio: 4/3;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .cell:hover {
+            transform: scale(1.04);
+            border-color: #ffffff;
+            z-index: 5;
+        }
+
+        .cell.disabled {
+            background-color: #222;
+            border-color: #444;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .cell input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: monospace;
+            font-size: 1.6rem;
+            text-align: center;
+            cursor: pointer;
+            text-shadow: 2px 2px 0px #000;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: #222;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #452266;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .info-box h2 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #452266;
+        }
+
+        /* COMPACT WHEEL DESIGN TO PREVENT SCROLLING */
+        .wheel-outer-wrapper {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 5px auto;
+            border: 4px solid #452266;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            background: #111;
+        }
+
+        .wheel-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.1, 0.8, 0.25, 1);
+        }
+
+        .wheel-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            right: -18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            border-right: 20px solid #ff3333;
+            z-index: 10;
+            filter: drop-shadow(-2px 2px 2px rgba(0,0,0,0.5));
+        }
+
+        .spin-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 55px;
+            height: 55px;
+            background: #452266;
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 11px;
+            z-index: 11;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .spin-btn:hover {
+            background: #5599ff;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--blue-jeopardy);
+            border: 5px solid white;
+            padding: 40px;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0px 0px 30px rgba(241, 196, 15, 0.4);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-question {
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        @media (max-width: 1200px) {
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            .player-side {
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                width: 100%;
+                gap: 15px;
+            }
+            .player-panel, .info-box {
+                width: 48%;
+            }
+            .center-column {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-title-input">WAR GAMES!</div>
+    <button class="close-btn" onclick="openRules()">View Rules</button>
+    <br>
+    <div class="game-container">
+        
+        <div class="player-side">
+            <div class="player-panel">
+                <input type="text" class="player-name" value="PLAYER 1">
+            </div>
+            
+            <div class="info-box">
+                <h2>Timer</h2>
+                <div id="timerDisplay" style="font-size: 36px; text-align: center; color: #452266; font-weight: bold; margin: 5px 0; font-family: monospace;">0</div>
+                <div class="timer-controls" style="display: flex; gap: 5px; width: 100%; justify-content: center;">
+                    <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #452266; width: 50px; padding: 5px; text-align: center; font-size: 0.9rem;">
+                    <button onclick="startTimer()" style="background: #452266; color: white; border: none; padding: 5px; cursor: pointer; font-family: monospace; width: 65px; font-size: 0.85rem;">START</button>
+                    <button onclick="stopTimer()" style="background: #452266; color: white; border: none; padding: 5px; cursor: pointer; font-family: monospace; width: 65px; font-size: 0.85rem;">STOP</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="center-column">
+            <div class="board-scroll-wrapper">
+                <div class="board" id="game-board"></div>
+            </div>
+        </div>
+        
+        <div class="player-side">
+            <div class="player-panel">
+                <input type="text" class="player-name" value="PLAYER 2">
+            </div>
+            
+            <div class="info-box" id="wheel-widget-box">
+                <h2>Punishment Wheel</h2>
+                <div class="wheel-outer-wrapper" id="wheel-frame">
+                    <div class="wheel-pointer"></div>
+                    <button class="spin-btn" onclick="spinWheel()">SPIN</button>
+                    <div class="wheel-container" id="wheel-container">
+                        <canvas id="wheelCanvas" class="wheel-canvas" width="250" height="250"></canvas>
+                    </div>
+                </div>
+                <div id="wheelWinnerDisplay" style="font-size: 1.1rem; color: #5599ff; font-weight: bold; min-height: 25px; margin-top: 8px; text-align: center; text-transform: uppercase;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <div class="modal-question" id="modal-text">Loading question...</div>
+            <button class="close-btn" onclick="closeModal()">Close Window</button><br>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="rules-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeRules()">Close Rules</button>
+            <div id="rules-text" style="margin-top: 30px; text-align: left; line-height: 1.6; font-size: 1.2rem;">
+                <h3 style="text-align: center;">How to Play War Games!:</h3>
+                <p style='text-align:center;'>Loading rules...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allGameData = [];
+        let wheelOptions = [];
+        let scores = { p1: 750, p2: 750 };
+        let activeCell = null;
+        let isSpinning = false;
+        
+        let flashingSliceIndex = null;
+        let flashingColorOverride = null;
+        let flashInterval = null;
+
+        const pointMap = { "Easy": "EASY", "Medium": "MEDIUM", "Hard": "HARD", "Expert": "EXPERT", "Insane": "INSANE", "Unfair": "UNFAIR" };
+
+        function loadGameData() {
+            const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQcgdm3vath-Yr1B4IviKgBleFY4ctEPT3as0tr2uWjXkknrxXjEzJU8KRR4J4IQ6QHUyDiVj1MqfnM/pub?gid=0&single=true&output=csv";
+            
+            Papa.parse(csvUrl, {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    allGameData = results.data;
+                    wheelOptions = allGameData.map(r => r.WheelOption).filter(o => o && o.trim() !== "").slice(0, 10);
+                    
+                    while(wheelOptions.length < 10) {
+                        wheelOptions.push(`Option ${wheelOptions.length + 1}`);
+                    }
+                    
+                    initBoard(); 
+                    drawWheel();
+                }
+            });
+        }
+
+        function drawWheel() {
+            const canvas = document.getElementById("wheelCanvas");
+            const ctx = canvas.getContext("2d");
+            const numSlices = 10;
+            const arc = (2 * Math.PI) / numSlices;
+            const defaultColors = ["#222222", "#452266", "#1a1a1a", "#4477aa", "#2d2d2d", "#222222", "#452266", "#1a1a1a", "#4477aa", "#2d2d2d"];
+
+            ctx.clearRect(0, 0, 250, 250);
+            
+            for (let i = 0; i < numSlices; i++) {
+                const angle = i * arc;
+                
+                if (i === flashingSliceIndex && flashingColorOverride) {
+                    ctx.fillStyle = flashingColorOverride;
+                } else {
+                    ctx.fillStyle = defaultColors[i % defaultColors.length];
+                }
+                
+                ctx.beginPath();
+                ctx.moveTo(125, 125);
+                ctx.arc(125, 125, 120, angle, angle + arc);
+                ctx.lineTo(125, 125);
+                ctx.fill();
+                
+                if (i === flashingSliceIndex && flashingColorOverride) {
+                    ctx.strokeStyle = "#ffffff";
+                    ctx.lineWidth = 4;
+                } else {
+                    ctx.strokeStyle = "#555555";
+                    ctx.lineWidth = 2;
+                }
+                ctx.stroke();
+
+                ctx.save();
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 9px monospace";
+                ctx.translate(125, 125);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = "right";
+                
+                let txt = wheelOptions[i] || "";
+                if(txt.length > 13) txt = txt.substring(0, 11) + "..";
+                ctx.fillText(txt, 112, 3);
+                ctx.restore();
+            }
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            clearInterval(flashInterval);
+            flashingSliceIndex = null;
+            flashingColorOverride = null;
+            document.getElementById("wheelWinnerDisplay").innerText = "";
+            drawWheel();
+
+            const numSlices = 10;
+            const arc = 360 / numSlices;
+            const winningIndex = Math.floor(Math.random() * numSlices);
+            
+            const targetAngle = (360 - (winningIndex * arc) - (arc / 2)) % 360;
+            const finalRotation = 1800 + targetAngle; 
+
+            const container = document.getElementById("wheel-container");
+            container.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.25, 1)";
+            container.style.transform = `rotate(${finalRotation}deg)`;
+
+            setTimeout(() => {
+                isSpinning = false;
+                document.getElementById("wheelWinnerDisplay").innerText = "WINNER: " + wheelOptions[winningIndex];
+                
+                triggerIsolatedSliceGlow(winningIndex);
+                
+                container.style.transition = "none";
+                container.style.transform = `rotate(${targetAngle}deg)`;
+            }, 4000);
+        }
+
+        function triggerIsolatedSliceGlow(sliceIndex) {
+            flashingSliceIndex = sliceIndex;
+            const glowSequence = ["#452266", "#990000", "#009900", "#452266", "#990000", "#009900"];
+            let step = 0;
+
+            flashingColorOverride = glowSequence[step];
+            drawWheel();
+            step++;
+
+            flashInterval = setInterval(() => {
+                if (step < glowSequence.length) {
+                    flashingColorOverride = glowSequence[step];
+                    drawWheel();
+                    step++;
+                } else {
+                    clearInterval(flashInterval);
+                    flashingSliceIndex = null;
+                    flashingColorOverride = null;
+                    drawWheel();
+                }
+            }, 600);
+        }
+
+        function initBoard() {
+            const board = document.getElementById('game-board');
+            board.innerHTML = ""; 
+            const categories = [...new Set(allGameData.map(r => r.Category))].filter(c => c);
+
+            categories.forEach(cat => {
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.innerHTML = `<div class="category-editable" contenteditable="false">${cat}</div>`;
+                board.appendChild(header);
+            });
+
+            const glowStates = [
+                { dim: "", bright: "", bg: "" },
+                { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" },
+                { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },
+                { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }
+            ];
+
+            ["Easy", "Medium", "Hard", "Expert", "Insane", "Unfair"].forEach(diff => {
+                categories.forEach(cat => {
+                    const row = allGameData.find(r => r.Category === cat && r.Difficulty === diff);
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    let colorState = 0;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = pointMap[diff] || diff; 
+                    input.style.pointerEvents = "none";
+                    
+                    cell.onclick = (e) => {
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            colorState = (colorState + 1) % 4;
+                            
+                            if (colorState === 0) {
+                                cell.classList.remove("special-space");
+                                cell.style.removeProperty("--glow-dim");
+                                cell.style.removeProperty("--glow-bright");
+                                cell.style.removeProperty("--glow-bg");
+                            } else {
+                                cell.classList.add("special-space");
+                                cell.style.setProperty("--glow-dim", glowStates[colorState].dim);
+                                cell.style.setProperty("--glow-bright", glowStates[colorState].bright);
+                                cell.style.setProperty("--glow-bg", glowStates[colorState].bg);
+                            }
+                            return;
+                        }
+
+                        if (cell.classList.contains('disabled')) return;
+                        launchQuestion(row, cell);
+                    };
+
+                    cell.oncontextmenu = (e) => {
+                        e.preventDefault();
+                        cell.classList.remove('disabled');
+                        cell.classList.remove("special-space");
+                        colorState = 0;
+                        cell.style.removeProperty("--glow-dim");
+                        cell.style.removeProperty("--glow-bright");
+                        cell.style.removeProperty("--glow-bg");
+                        input.disabled = false;
+                    };
+                    
+                    cell.appendChild(input);
+                    board.appendChild(cell);
+                });
+            });
+        }
+
+        function launchQuestion(row, cellElement) {
+            if (!row) return;
+            const modal = document.getElementById('modal');
+            const textDisplay = document.getElementById('modal-text');
+            const modalContent = document.querySelector('.modal-content');
+            
+            document.querySelectorAll('.dynamic-content').forEach(el => el.remove());
+            textDisplay.innerText = row.Question;
+            
+            if (row.ImageURL && row.ImageURL.trim() !== "") {
+                const img = document.createElement('img');
+                img.src = row.ImageURL;
+                img.className = 'dynamic-content';
+                img.style.maxWidth = "100%";
+                img.style.marginTop = "20px";
+                img.style.borderRadius = "4px";
+                modalContent.appendChild(img);
+            }
+
+            const btn = document.createElement('button');
+            btn.innerText = "Reveal Answer";
+            btn.className = "close-btn dynamic-content";
+            btn.style.marginTop = "20px";
+            btn.onclick = () => {
+                stopTimer();
+                
+                if (row.ImageURL2 && row.ImageURL2.trim() !== "") {
+                    const img2 = document.createElement('img');
+                    img2.src = row.ImageURL2;
+                    img2.className = 'dynamic-content';
+                    img2.style.maxWidth = "100%";
+                    img2.style.marginTop = "20px";
+                    img2.style.borderRadius = "4px";
+                    modalContent.appendChild(img2);
+                }
+
+                const ans = document.createElement('div');
+                ans.className = 'dynamic-content';
+                ans.style.marginTop = "15px";
+                ans.style.fontSize = "1.5rem";
+                ans.style.color = "#ffffff";
+                ans.innerText = "" + row.Answer;
+                modalContent.appendChild(ans);
+                btn.remove();
+            };
+            modalContent.appendChild(btn);
+
+            modal.style.display = 'flex';
+            activeCell = cellElement;
+            startTimer();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            stopTimer();
+            if (activeCell) {
+                activeCell.classList.add('disabled');
+                activeCell = null;
+            }
+        }
+
+        let countdown;
+        function startTimer() {
+            clearInterval(countdown);
+            let s = parseInt(document.getElementById("timerInput").value) || 30;
+            const display = document.getElementById("timerDisplay");
+            countdown = setInterval(() => {
+                s--;
+                display.innerText = s;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(countdown);
+            document.getElementById("alarm-sound-countdown").pause();
+            document.getElementById("alarm-sound-end").pause();
+        }
+
+        loadGameData();
+        
+        function openRules() {
+            const rulesUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQcgdm3vath-Yr1B4IviKgBleFY4ctEPT3as0tr2uWjXkknrxXjEzJU8KRR4J4IQ6QHUyDiVj1MqfnM/pub?gid=1440005840&single=true&output=csv";
+            const rulesContainer = document.getElementById('rules-text');
+            
+            if (rulesContainer.innerText.includes("Loading rules...")) {
+                Papa.parse(rulesUrl, {
+                    download: true,
+                    header: true,
+                    complete: function(results) {
+                        let html = `<h3 style="text-align: center;">How to Play War Games!:</h3>`;
+                        results.data.forEach(row => {
+                            if (row.RuleText && row.RuleText.trim() !== "") {
+                                html += `<p style="font-size: 15px; margin-bottom: 12px;">${row.RuleText}</p>`;
+                            }
+                        });
+                        rulesContainer.innerHTML = html;
+                    },
+                    error: function(err) {
+                        rulesContainer.innerHTML = "<p style='color:red;'>Error loading rules from Google Sheets.</p>";
+                    }
+                });
+            }
+            document.getElementById('rules-modal').style.display = 'flex';
+        }
+
+        function closeRules() {
+            document.getElementById('rules-modal').style.display = 'none';
+        }
+
+        document.querySelectorAll('.player-panel').forEach(panel => {
+            let colorState = 0;
+            const glowStates = [
+                { dim: "", bright: "", bg: "" },
+                { dim: "#336699", bright: "#5599ff", bg: "rgba(51, 102, 153, 0.15)" },
+                { dim: "#990000", bright: "#ff0000", bg: "rgba(255, 0, 0, 0.15)" },
+                { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }
+            ];
+
+            panel.addEventListener('click', function(e) {
+                if (e.shiftKey) {
+                    e.preventDefault();
+                    colorState = (colorState + 1) % 4;
+                    if (colorState === 0) {
+                        panel.classList.remove("special-space");
+                        panel.style.removeProperty("--glow-dim");
+                        panel.style.removeProperty("--glow-bright");
+                        panel.style.removeProperty("--glow-bg");
+                    } else {
+                        panel.classList.add("special-space");
+                        panel.style.setProperty("--glow-dim", glowStates[colorState].dim);
+                        panel.style.setProperty("--glow-bright", glowStates[colorState].bright);
+                        panel.style.setProperty("--glow-bg", glowStates[colorState].bg);
+                    }
+                }
+            });
+
+            panel.addEventListener('contextmenu', function(e) {
+                if (panel.classList.contains('special-space')) {
+                    e.preventDefault();
+                    colorState = 0;
+                    panel.classList.remove("special-space");
+                    panel.style.removeProperty("--glow-dim");
+                    panel.style.removeProperty("--glow-bright");
+                    panel.style.removeProperty("--glow-bg");
+                }
+            });
+        });
+    </script>
+    <audio id="alarm-sound-countdown" src="https://geoffhenao.github.io/geoffamania/drowning-panic-theme.mp3"></audio>
+    <audio id="alarm-sound-end" src="https://geoffhenao.github.io/geoffamania/ring-loss.mp3"></audio>
+</body>
+</html>
