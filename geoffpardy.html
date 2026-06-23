@@ -101,10 +101,10 @@
             display: flex;
             flex-direction: row;
             justify-content: center;
-            align-items: flex-start;
+            align-items: stretch; /* Forces all columns (sides and center) to be the exact same height on desktop */
             width: 100%;
-            max-width: 2000px; /* Slightly increased to fit wider board layout safely */
-            gap: 30px; /* Increased separation between side panels and board */
+            max-width: 2000px; 
+            gap: 30px; 
         }
 
         /* Side Wrapper for Player Content */
@@ -112,7 +112,7 @@
             display: flex;
             flex-direction: column;
             gap: 0px;
-            flex-shrink: 0; /* Keeps side panels from compressing the board space */
+            flex-shrink: 0; 
         }
 
         /* Center Layout Wrapper to Stack Board and Timer cleanly */
@@ -120,7 +120,7 @@
             display: flex;
             flex-direction: column;
             flex: 1;
-            max-width: 1000px; /* Explicit maximum bounds for board space */
+            max-width: 1000px; 
             gap: 20px;
             min-width: 0; 
             margin-top: -9px;
@@ -431,6 +431,36 @@
             color: #336699;
         }
 
+        /* Completely Blank Drag & Drop Zone Layout */
+        .drag-drop-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: calc(100% - 24px);
+            flex: 1; /* Instructs layout engine to take up all remaining space down to matching line bounds */
+            min-height: 100px;
+            margin: 0 auto;
+            border: 2px dashed transparent; /* Stays completely invisible until dragover */
+            border-radius: 6px;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+
+        /* Flashes visual target boundaries cleanly only during a live mouse hover drag */
+        .drag-drop-zone.dragover {
+            border-color: #336699;
+            background-color: rgba(51, 102, 153, 0.05);
+        }
+
+        .banner-preview {
+            max-width: 100%;
+            height: 100%; /* Spans full dynamic height of drop zone boundaries */
+            max-height: 190px;
+            object-fit: contain;
+            border-radius: 4px;
+            display: none;
+        }
+
         .timer-controls input,
         .timer-controls button {
             font-family: monospace;
@@ -627,6 +657,10 @@
                     <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; pointer: cursor; font-family: monospace; width: 80px;">STOP</button>
                 </div>
             </div>
+
+            <div class="drag-drop-zone" id="dropZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                <img id="bannerImage" class="banner-preview" src="" alt="Game Banner">
+            </div>
         </div>
         
         <div class="player-side">
@@ -673,7 +707,7 @@
     <div class="modal-overlay" id="endgame-modal">
         <div class="modal-content" style="box-shadow: 0px 0px 35px rgba(255, 0, 0, 0.5);">
             <div class="modal-question" id="endgame-text" style="font-size: 2rem; white-space: pre-line;"></div>
-            <button class="close-btn" onclick="document.getElementById('endgame-modal').style.display='none';">CLOSE WINDOW</button><br>
+            <button class="close-btn" onclick="document.getElementById('endgame-modal').style.display='none';">Dismiss</button><br>
         </div>
     </div>
 
@@ -870,7 +904,7 @@
                 const loserName = (p === 'p1') ? p1Name : p2Name;
                 const winnerName = (p === 'p1') ? p2Name : p1Name;
 
-                triggerEndGameModal(`${loserName} just got GEOFF’D!\n\n${winnerName} is the GEO(FF)PARDY CHAMPION!`);
+                triggerEndGameModal(`${loserName} just got GEOFF’D!\n\n${winnerName} is the Geo(ff)pardy Champion!`);
                 return; 
             }
 
@@ -878,11 +912,11 @@
             if (clearedQuestionsCount >= 18) {
                 stopTimer();
                 if (scores.p1 > scores.p2) {
-                    triggerEndGameModal(`All questions have been cleared!\n\n${p1Name} finishes with ${scores.p1} points and is the GEO(FF)PARDY CHAMPION!`);
+                    triggerEndGameModal(`All questions have been cleared!\n\n${p1Name} finishes with ${scores.p1} points and is the Geo(ff)pardy Champion!`);
                 } else if (scores.p2 > scores.p1) {
-                    triggerEndGameModal(`All questions have been cleared!\n\n${p2Name} finishes with ${scores.p2} points and is the GEO(FF)PARDY CHAMPION!`);
+                    triggerEndGameModal(`All questions have been cleared!\n\n${p2Name} finishes with ${scores.p2} points and is the Geo(ff)pardy Champion!`);
                 } else {
-                    triggerEndGameModal(`All questions have been cleared!\n\nIt's a TIE! \n\n${p1Name} and ${p2Name} finished with ${scores.p1} points!`);
+                    triggerEndGameModal(`All questions have been cleared!\n\nIt's a TIE! ${p1Name} and ${p2Name} finished with ${scores.p1} points!`);
                 }
             }
         }
@@ -927,6 +961,35 @@
 
         function toggleBonusGlow(el) { el.classList.toggle('bonus-active'); }
         function toggleCurseGlow(el) { el.classList.toggle('curse-active'); }
+
+        // 8. PURE DRAG AND DROP HANDLING LOGIC
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = document.getElementById('dropZone');
+            zone.classList.remove('dragover');
+            
+            const file = e.dataTransfer.files[0];
+            const preview = document.getElementById('bannerImage');
+            
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
 
         loadGameData();
         
