@@ -865,13 +865,19 @@
 
         let countdown;
         function startTimer() {
-            // Force audio tracks to 50% volume right as the timer initializes
+            // Force audio tracks to 20% volume right as the timer initializes
             document.getElementById("alarm-sound-countdown").volume = 0.2;
             document.getElementById("alarm-sound-end").volume = 0.2;
 
             clearInterval(countdown);
+            
+            // Get the starting time value
             let s = parseInt(document.getElementById("timerInput").value) || 30;
             const display = document.getElementById("timerDisplay");
+            
+            // IMMEDIATELY update the display text so it doesn't wait 1 second to change
+            display.innerText = s;
+            
             countdown = setInterval(() => {
                 s--;
                 display.innerText = s;
