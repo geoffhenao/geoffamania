@@ -215,7 +215,7 @@
             border: none;
             border-radius: 4px;
             text-transform: uppercase;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, background-color 0.2s;
             font-weight: bold;
         }
 .btn-sub:hover {
@@ -236,10 +236,13 @@
             align-items: center;
             justify-content: center;
             gap: 4px;
-            transition: opacity 0.4s ease, background-color 0.2s;
+            transition: opacity 0.3s ease, background-color 0.2s;
         }
         .btn-skip:hover {
             background-color: #777;
+        }
+        .btn-skip.dimmed {
+            opacity: 0.25 !important;
         }
         .btn-skip svg {
             width: 14px;
@@ -593,7 +596,7 @@
                 <div class="btn-group">
                     <button class="score-btn btn-add" onclick="updateScore('p1', true)">Win</button>
                     <button class="score-btn btn-sub" onclick="updateScore('p1', false)">Loss</button>
-                    <button class="score-btn btn-skip" onclick="document.getElementById('wager-p1').value=''; this.style.opacity='0'; this.style.pointerEvents='none';">
+                    <button class="score-btn btn-skip" onclick="toggleSkipButton(this, 'wager-p1')">
                         <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>Skip
                     </button>
                 </div>
@@ -620,8 +623,8 @@
                 <div id="timerDisplay" style="font-size: 40px; text-align: center; color: #5599ff; font-weight: bold; margin: 10px 0; font-family: monospace;">30</div>
                 <div class="timer-controls" style="display: flex; gap: 5px;">
                     <input type="number" id="timerInput" value="30" min="1" max="60" style="background: #000; color: white; border: 1px solid #336699; width: 60px; padding: 5px; text-align: center; font-size: 1rem;">
-                    <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">START</button>
-                    <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; cursor: pointer; font-family: monospace; width: 80px;">STOP</button>
+                    <button onclick="startTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; pointer: cursor; font-family: monospace; width: 80px;">START</button>
+                    <button onclick="stopTimer()" style="background: #336699; color: white; border: none; padding: 5px 10px; pointer: cursor; font-family: monospace; width: 80px;">STOP</button>
                 </div>
             </div>
         </div>
@@ -634,7 +637,7 @@
                 <div class="btn-group">
                     <button class="score-btn btn-add" onclick="updateScore('p2', true)">Win</button>
                     <button class="score-btn btn-sub" onclick="updateScore('p2', false)">Loss</button>
-                    <button class="score-btn btn-skip" onclick="document.getElementById('wager-p2').value=''; this.style.opacity='0'; this.style.pointerEvents='none';">
+                    <button class="score-btn btn-skip" onclick="toggleSkipButton(this, 'wager-p2')">
                         <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>Skip
                     </button>
                 </div>
@@ -663,8 +666,14 @@
     <div class="modal-overlay" id="rules-modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeRules()">Close Rules</button>
-            <div id="rules-text" style="margin-top: 30px; text-align: left; line-height: 1.6; font-size: 1.2rem;">
-                </div>
+            <div id="rules-text" style="margin-top: 30px; text-align: left; line-height: 1.6; font-size: 1.2rem;"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="endgame-modal">
+        <div class="modal-content" style="box-shadow: 0px 0px 35px rgba(255, 0, 0, 0.5);">
+            <div class="modal-question" id="endgame-text" style="font-size: 2rem; white-space: pre-line;"></div>
+            <button class="close-btn" onclick="document.getElementById('endgame-modal').style.display='none';">CLOSE WINDOW</button><br>
         </div>
     </div>
 
@@ -673,8 +682,9 @@
         let allGameData = [];
         let scores = { p1: 1000, p2: 1000 };
         let activeCell = null;
+        let clearedQuestionsCount = 0; 
 
-        // Map for Point Values (100/300 etc) - if grid size is increased, make sure to add titles + display text here
+        // Map for Point Values
         const pointMap = { "Easy": "EASY", "Medium": "MEDIUM", "Hard": "HARD" };
 
         // 2. LOAD DATA FROM GOOGLE SHEET
@@ -714,14 +724,13 @@
                 { dim: "#009900", bright: "#00ff00", bg: "rgba(0, 255, 0, 0.15)" }              // State 3: Green
             ];
 
-            // Build Cells (Add more categories here to increase the grid size)
+            // Build Cells
             ["Easy", "Medium", "Hard"].forEach(diff => {
                 categories.forEach(cat => {
                     const row = allGameData.find(r => r.Category === cat && r.Difficulty === diff);
                     const cell = document.createElement('div');
                     cell.className = 'cell';
                     
-                    // Track color state locally for this specific cell
                     let colorState = 0;
 
                     const input = document.createElement('input');
@@ -729,12 +738,9 @@
                     input.value = pointMap[diff] || diff; 
                     input.style.pointerEvents = "none";
                     
-                    // Left Click: Launch Question OR Cycle Colors if Shift is held
                     cell.onclick = (e) => {
                         if (e.shiftKey) {
                             e.preventDefault();
-                            
-                            // Cycle through states 0 to 3
                             colorState = (colorState + 1) % 4;
                             
                             if (colorState === 0) {
@@ -748,25 +754,21 @@
                                 cell.style.setProperty("--glow-bright", glowStates[colorState].bright);
                                 cell.style.setProperty("--glow-bg", glowStates[colorState].bg);
                             }
-                            return; // Stop execution here so the modal doesn't open!
+                            return; 
                         }
 
                         if (cell.classList.contains('disabled')) return;
                         launchQuestion(row, cell);
                     };
 
-                    // Right Click: Reset
                     cell.oncontextmenu = (e) => {
                         e.preventDefault();
                         cell.classList.remove('disabled');
-                        cell.classList.remove("special-space"); // Clear glow on reset
-                        
-                        // Reset color tracking
+                        cell.classList.remove("special-space"); 
                         colorState = 0;
                         cell.style.removeProperty("--glow-dim");
                         cell.style.removeProperty("--glow-bright");
                         cell.style.removeProperty("--glow-bg");
-                        
                         input.disabled = false;
                     };
                     
@@ -783,18 +785,14 @@
             const textDisplay = document.getElementById('modal-text');
             const modalContent = document.querySelector('.modal-content');
             
-            // Clean up old elements
             document.querySelectorAll('.dynamic-content').forEach(el => el.remove());
 
-            // 1. Create a dummy element to parse the string from Google Sheets
             const parser = new DOMParser();
             const decodedDoc = parser.parseFromString(row.Question, 'text/html');
             const decodedString = decodedDoc.body.textContent || decodedDoc.body.innerHTML;
 
-            // 2. Inject the completely unescaped HTML directly into the display
             textDisplay.innerHTML = decodedString;
             
-            // Handle first Image from ImageURL column
             if (row.ImageURL && row.ImageURL.trim() !== "") {
                 const img = document.createElement('img');
                 img.src = row.ImageURL;
@@ -805,15 +803,13 @@
                 modalContent.appendChild(img);
             }
 
-            // Reveal Answer Button
             const btn = document.createElement('button');
             btn.innerHTML = "Reveal Answer";
             btn.className = "close-btn dynamic-content";
             btn.style.marginTop = "20px";
             btn.onclick = () => {
-                stopTimer(); // <-- Safely stops countdown and SFX when answer is revealed
+                stopTimer(); 
                 
-                // 1. Handle Second Image Column (ImageURL2) AFTER clicking reveal
                 if (row.ImageURL2 && row.ImageURL2.trim() !== "") {
                     const img2 = document.createElement('img');
                     img2.src = row.ImageURL2;
@@ -824,7 +820,6 @@
                     modalContent.appendChild(img2);
                 }
 
-                // 2. Display the Answer Text
                 const ans = document.createElement('div');
                 ans.className = 'dynamic-content';
                 ans.style.marginTop = "15px";
@@ -840,42 +835,80 @@
             modal.style.display = 'flex';
             activeCell = cellElement;
 
-            startTimer(); // <-- Safely triggers countdown as soon as the window opens
+            startTimer(); 
         }
 
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
-            stopTimer(); // <-- Safety net to stop timer if window is closed early
+            stopTimer(); 
             if (activeCell) {
+                if (!activeCell.classList.contains('disabled')) {
+                    clearedQuestionsCount++;
+                }
                 activeCell.classList.add('disabled');
                 activeCell = null;
             }
         }
 
-        // 5. SCORE/TIMER (Preserved)
+        // 5. SCORE TRACKING AND CUSTOM MODAL END TRIGGERS
         function updateScore(p, add) {
             const w = parseInt(document.getElementById(`wager-${p}`).value) || 0;
             const b = document.getElementById(`bonus-panel-${p}`).classList.contains('bonus-active');
             const c = document.getElementById(`curse-panel-${p}`).classList.contains('curse-active');
             if(add) scores[p] += c ? Math.round(w/2) : w;
             else scores[p] -= b ? Math.round(w/2) : w;
+            
             document.getElementById(`score-${p}`).innerText = scores[p];
             document.getElementById(`wager-${p}`).value = '';
+
+            const p1Name = document.querySelectorAll('.player-name')[0].value.trim() || "PLAYER 1";
+            const p2Name = document.querySelectorAll('.player-name')[1].value.trim() || "PLAYER 2";
+
+            // --- END GAME TRIGGER 1: BANKRUPTCY ---
+            if (scores[p] <= 0) {
+                stopTimer();
+                const loserName = (p === 'p1') ? p1Name : p2Name;
+                const winnerName = (p === 'p1') ? p2Name : p1Name;
+
+                triggerEndGameModal(`${loserName} just got GEOFF’D!\n\n${winnerName} is the GEO(FF)PARDY CHAMPION!`);
+                return; 
+            }
+
+            // --- END GAME TRIGGER 2: ALL 18 QUESTIONS CLEARED ---
+            if (clearedQuestionsCount >= 18) {
+                stopTimer();
+                if (scores.p1 > scores.p2) {
+                    triggerEndGameModal(`All questions have been cleared!\n\n${p1Name} finishes with ${scores.p1} points and is the GEO(FF)PARDY CHAMPION!`);
+                } else if (scores.p2 > scores.p1) {
+                    triggerEndGameModal(`All questions have been cleared!\n\n${p2Name} finishes with ${scores.p2} points and is the GEO(FF)PARDY CHAMPION!`);
+                } else {
+                    triggerEndGameModal(`All questions have been cleared!\n\nIt's a TIE! \n\n${p1Name} and ${p2Name} finished with ${scores.p1} points!`);
+                }
+            }
         }
 
+        function triggerEndGameModal(messageText) {
+            document.getElementById('endgame-text').innerText = messageText;
+            document.getElementById('endgame-modal').style.display = 'flex';
+        }
+
+        // 6. TOGGLE SKIP BUTTON DIM ENGINE
+        function toggleSkipButton(buttonElement, wagerInputId) {
+            document.getElementById(wagerInputId).value = '';
+            buttonElement.classList.toggle('dimmed');
+        }
+
+        // 7. TIMER ENGINE CONTROLS
         let countdown;
         function startTimer() {
-            // Force audio tracks to 20% volume right as the timer initializes
             document.getElementById("alarm-sound-countdown").volume = 0.2;
             document.getElementById("alarm-sound-end").volume = 0.2;
 
             clearInterval(countdown);
             
-            // Get the starting time value
             let s = parseInt(document.getElementById("timerInput").value) || 30;
             const display = document.getElementById("timerDisplay");
             
-            // IMMEDIATELY update the display text so it doesn't wait 1 second to change
             display.innerText = s;
             
             countdown = setInterval(() => {
@@ -940,11 +973,9 @@
             ];
 
             panel.addEventListener('click', function(e) {
-                // Check if the Shift key is held during the click
                 if (e.shiftKey) {
                     e.preventDefault();
-                    
-                    colorState = (colorState + 1) % 4; // Cycle 0 -> 1 -> 2 -> 3 -> 0
+                    colorState = (colorState + 1) % 4; 
                     
                     if (colorState === 0) {
                         panel.classList.remove("special-space");
@@ -960,7 +991,6 @@
                 }
             });
 
-            // Right-click shortcut to quickly clear a panel's color back to default
             panel.addEventListener('contextmenu', function(e) {
                 if (panel.classList.contains('special-space')) {
                     e.preventDefault();
