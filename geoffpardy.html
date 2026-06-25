@@ -38,6 +38,9 @@
 /* Keeps the player panels dark even when the shift-click glow is active */
 .player-panel.special-space {
     background: var(--panel-bg) !important;
+    box-shadow: 0 0 35px var(--glow-bright, rgba(51, 102, 153, 1)), 
+                inset 0 0 25px var(--glow-bright, rgba(51, 102, 153, 1)) !important;
+}
 }
 /* Forces cells to maintain a dark base color under the translucent glow */
 .cell.special-space {
@@ -273,13 +276,13 @@
         /* Binterman Blue Glow effect when active */
         .modifier-panel.bonus-active {
             border-color: #5599ff;
-            box-shadow: 0 0 25px rgba(85, 153, 255, 0.8), 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 0 25px rgba(85, 153, 255, 0.8), 0 4px 15px rgba(0,0,0,1);
         }
 
         /* Ngiam Red Glow effect when active */
         .modifier-panel.curse-active {
             border-color: #ff3333;
-            box-shadow: 0 0 25px rgba(255, 51, 51, 0.8), 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 0 25px rgba(255, 51, 51, 0.8), 0 4px 15px rgba(0,0,0,1);
         }
 
         /* Editable Modifier Title Input */
