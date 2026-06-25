@@ -13,7 +13,12 @@
 </script>
 
 <style>
-    .column-headers {
+/* Global Monospace Enforcer for Form Elements */
+input, textarea, button, select {
+    font-family: monospace !important;
+}
+
+.column-headers {
     display: grid;
     /* Uses the exact same responsive column layout as your game grid */
     grid-template-columns: repeat(7, min(11vw, 13vh));
@@ -30,7 +35,8 @@
     text-align: center;
     text-shadow: 0 0 8px rgba(85, 153, 255, 0.4);
 }
-    .fact-check-trackers {
+
+.fact-check-trackers {
     display: flex;
     gap: 4px;
     align-items: center;
@@ -61,7 +67,8 @@
     border-color: transparent !important;
     box-shadow: none !important;
 }
-    #clearBoardBtn {
+
+#clearBoardBtn {
     margin-top: 2vh;
     background: #222;
     color: #990000;
@@ -81,7 +88,8 @@
     color: white;
     box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
 }
-    /* Base setup to prepare the live text areas for a glow animation */
+
+/* Base setup to prepare the live text areas for a glow animation */
 .live-text.player-glow {
     animation: neonPulse 2s infinite ease-in-out;
     z-index: 5;
@@ -100,9 +108,11 @@
     --glow-bright: #ff0000;
     --glow-bg: rgba(255, 0, 0, 0.15);
 }
-    .arrow-container, .directional-arrow {
+
+.arrow-container, .directional-arrow {
     display: none !important;
 }
+
 body {
     margin: 0;
     background: #000000;
@@ -310,7 +320,6 @@ body {
     display: block;
 }
 
-
 .label {
     position: absolute;
     inset: 0;
@@ -430,7 +439,7 @@ input[type="number"]::-webkit-inner-spin-button {
     <div class="score-row">
         <textarea class="live-text name-field player-glow glow-player-a" rows="1" placeholder="Player 1"></textarea>
         <textarea class="live-text score-field player-glow glow-player-a" rows="1" placeholder="0"></textarea>
-                <div class="fact-check-trackers">
+        <div class="fact-check-trackers">
             <span class="fc-x" onclick="toggleFC(this)">X</span>
             <span class="fc-x" onclick="toggleFC(this)">X</span>
             <span class="fc-x" onclick="toggleFC(this)">X</span>
@@ -439,7 +448,7 @@ input[type="number"]::-webkit-inner-spin-button {
     <div class="score-row" style="margin-top: 10px;">
         <textarea class="live-text name-field player-glow glow-player-b" rows="1" placeholder="Player 2"></textarea>
         <textarea class="live-text score-field player-glow glow-player-b" rows="1" placeholder="0"></textarea>
-                <div class="fact-check-trackers">
+        <div class="fact-check-trackers">
             <span class="fc-x" onclick="toggleFC(this)">X</span>
             <span class="fc-x" onclick="toggleFC(this)">X</span>
             <span class="fc-x" onclick="toggleFC(this)">X</span>
@@ -457,19 +466,17 @@ input[type="number"]::-webkit-inner-spin-button {
         </div>
     </div>
 
-    
-
     <div class="grid-wrap">
         <h1 id="boardTitle">WORK OR SHOOT</h1>
         <div class="column-headers">
-        <div>1</div>
-        <div>2</div>
-        <div>3</div>
-        <div>4</div>
-        <div>5</div>
-        <div>6</div>
-        <div>7</div>
-    </div>
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+            <div>7</div>
+        </div>
         <div class="grid" id="grid"></div>
         <button id="clearBoardBtn" onclick="clearFullBoard()">Clear Game Board</button>
     </div>
@@ -501,7 +508,6 @@ for(let i=0; i<42; i++){
         { name: 'br', sym: '↘', r:  1, c:  1, bottom: '2px', right: '2px' }
     ];
 
-    // Fixed math constraints for the updated 7-column layout
     const currentRow = Math.floor(i / 7);
     const currentCol = i % 7;
 
@@ -509,7 +515,6 @@ for(let i=0; i<42; i++){
         const targetRow = currentRow + d.r;
         const targetCol = currentCol + d.c;
 
-        // Validating placement across all 6 rows (0-5) and 7 columns (0-6)
         if (targetRow >= 0 && targetRow <= 5 && targetCol >= 0 && targetCol <= 6) {
             const arrow = document.createElement("div");
             arrow.className = "directional-arrow";
@@ -536,13 +541,11 @@ for(let i=0; i<42; i++){
 
     const label = document.createElement("div");
     label.className = "label";
-    //label.innerText = "Add Image"; //
 
     const img = document.createElement("img");
 
     const text = document.createElement("textarea");
     text.className = "overlay-text";
-    // text.placeholder = "Add text...";//
 
     const input = document.createElement("input");
     input.type = "file";
@@ -567,7 +570,6 @@ for(let i=0; i<42; i++){
         
         const currentRow = Math.floor(i / 7); 
         
-        // Block drop if space below is row-valid and empty
         if (currentRow < 5) {
             const panelBelow = grid.children[i + 7];
             if (panelBelow && panelBelow.dataset.filled !== "true") {
@@ -603,7 +605,6 @@ for(let i=0; i<42; i++){
         if(e.target === panel || e.target === label || e.target === img){
             const currentRow = Math.floor(i / 7); 
             
-            // Connect Four gravity placement logic
             if (currentRow < 5) {
                 const panelBelow = grid.children[i + 7];
                 if (!panelBelow || panelBelow.dataset.filled !== "true") {
@@ -727,18 +728,14 @@ function showAlert() {
 function hideAlert() {
     document.getElementById('customAlert').style.display = 'none';
 }
-function clearFullBoard() {
-    // Confirm box to prevent accidental mid-match wipes
-    // if (!confirm("ARE YOU SURE YOU WANT TO CLEAR THE ENTIRE BOARD MATRIX?")) return; //
 
-    // Loop through every single generated panel block on the grid
+function clearFullBoard() {
     Array.from(grid.children).forEach(panel => {
         const img = panel.querySelector("img");
         const label = panel.querySelector(".label");
         const text = panel.querySelector("textarea");
         const input = panel.querySelector("input[type='file']");
 
-        // 1. Wipe out images and reveal default prompt text labels
         if (img) {
             img.src = "";
             img.style.display = "none";
@@ -749,23 +746,19 @@ function clearFullBoard() {
         if (input) {
             input.value = "";
         }
-
-        // 2. Clear out any custom text overlays typed in
         if (text) {
             text.value = "";
         }
 
-        // 3. Clear the Connect Four data tracker flag
         delete panel.dataset.filled;
 
-        // 4. Strip out any active glow classes or variables
         panel.classList.remove("special-space");
         panel.style.removeProperty("--glow-dim");
         panel.style.removeProperty("--glow-bright");
         panel.style.removeProperty("--glow-bg");
     });
 }
-// Toggle individual fact check X's between neon green and dark gray
+
 function toggleFC(element) {
     element.classList.toggle("disabled");
 }
